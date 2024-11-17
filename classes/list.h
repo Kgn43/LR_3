@@ -7,25 +7,24 @@
 using std::string, std::ostream;
 
 template <typename T>
-struct ListNode {
+class ListNode {
+public:
     T value;
     ListNode* next;
     ListNode* previous;
 
-    //конструкторы
     ListNode(T val, ListNode* following, ListNode* prev) : value(val), next(following), previous(prev) {}
     ListNode(T val) : value(val), next(nullptr), previous(nullptr) {}
-    ListNode() : value(T()), next(nullptr), previous(nullptr) {} //не уверен, но тут могут возникать ошибки, если нет конструктора по умолчанию для АТД
+    ListNode() : value(T()), next(nullptr), previous(nullptr) {}
 };
 
 
-
 template <typename T>
-struct List{
+class List{
+public:
     ListNode<T>* first;
     ListNode<T>* last;
 
-    //конструктор
     List<T>(): first(nullptr), last(nullptr) {}
 
     void headInsert(T value);
@@ -34,7 +33,6 @@ struct List{
     void delLast();
     void delByVal(T val);
     bool find(T value);
-
 
     friend ostream& operator<<(ostream& os, const List<T>& ls) {
         ListNode<T> *curr = ls.first;

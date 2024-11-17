@@ -1,6 +1,5 @@
 #include "list.h"
 
-
 template<typename T>
 void List<T>::backInsert(T value) {
     ListNode<T>* newLast = new ListNode(value);
@@ -29,7 +28,6 @@ void List<T>::headInsert(T value) {
     }
 }
 
-
 template<typename T>
 void List<T>::delLast() {
     if (this->first->next == nullptr){
@@ -43,7 +41,6 @@ void List<T>::delLast() {
         last->next = nullptr;
     }
 }
-
 
 template<typename T>
 void List<T>::delFirst() {
@@ -59,7 +56,6 @@ void List<T>::delFirst() {
     }
 }
 
-
 template<typename T>
 bool List<T>::find(T value) {
     ListNode<T> *tmp = first;
@@ -71,8 +67,6 @@ bool List<T>::find(T value) {
     }
     return false;
 }
-
-
 
 template<typename T>
 void List<T>::delByVal(T val) {
@@ -99,7 +93,6 @@ void List<T>::delByVal(T val) {
     throw std::runtime_error(serr.str());
 }
 
-
 List<string> splitToList(const string &input, const char &delimiter){
     string word;
     List<string> output;
@@ -117,7 +110,6 @@ List<string> splitToList(const string &input, const char &delimiter){
     }
     return output;
 }
-
 
 List<Pair> splitToListPair(const string &input, const string& pairDelimiter, const char &keyValueDelimiter){
     string word;
@@ -150,7 +142,6 @@ List<Pair> splitToListPair(const string &input, const string& pairDelimiter, con
     return output;
 
 }
-
 
 string unSplitList(const List<string>& input, const char &delimiter){
     ListNode<string>* curr = input.first;

@@ -6,24 +6,22 @@
 
 using std::string, std::ostream;
 
-struct Pair{
+class Pair{
+public:
     string key;
     string value;
 
     Pair(): key(""), value("") {};
     Pair(string k, string v): key(std::move(k)), value(std::move(v)) {};
 
-
     bool operator==(const Pair& other) const {
         return (key == other.key) && (value == other.value);
     }
 
-
     friend ostream& operator<<(ostream& os, const Pair& pr) {
         os << pr.key << ", " << pr.value;
-    return os;
-}
-
+        return os;
+    }
 
 };
 

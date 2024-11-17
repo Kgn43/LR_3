@@ -19,11 +19,9 @@ void sList<T>::delByVal(T val) {
             curr = curr->next;
         }
         if (curr->next != nullptr) return;
-        else {
-            auto tmp = curr->next;
-            curr->next = curr->next->next;
-            delete tmp;
-        }
+        auto tmp = curr->next;
+        curr->next = curr->next->next;
+        delete tmp;
     }
 }
 
@@ -33,7 +31,8 @@ void sList<T>::delLast() {
     if (this->head->next == nullptr){
         delete this->head;
         this->head = nullptr;
-    } else{
+    }
+    else {
         auto ptr = this->head;
         while (ptr->next->next != nullptr){
             ptr = ptr->next;

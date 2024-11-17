@@ -41,8 +41,6 @@ void arr<T>::erase() {
     --size;
 }
 
-
-
 template <typename T>
 void arr<T>::del(size_t index) {
     if (index >= size) {
@@ -54,14 +52,13 @@ void arr<T>::del(size_t index) {
     size--;
 }
 
-
 template<typename T>
 void arr<T>::clear() {
     delete this->data;
 }
 
 
-arr<string> splitToArr(const string &input, char delimiter){
+arr<string> splitToArr(const string &input, const char delimiter){
     string word;
     arr<string> output;
     for (auto ch : input){
@@ -78,7 +75,6 @@ arr<string> splitToArr(const string &input, char delimiter){
     }
     return output;
 }
-
 
 arr<string> splitToArr(const string& input, const string& delimiter){
     string word;
@@ -110,8 +106,7 @@ arr<string> splitToArr(const string& input, const string& delimiter){
     return output;
 }
 
-
-string unsplit(const arr<string>& array, char delimiter){
+string unsplit(const arr<string>& array, const char delimiter){
     string output;
     for (int i = 0; i < array.size; ++i){
         output += array[i] + delimiter;

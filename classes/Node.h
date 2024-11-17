@@ -1,18 +1,19 @@
 #ifndef NODE_H
 #define NODE_H
 #include <string>
+#include <utility>
 
 using std::string;
 
 template <typename T>
-struct Node {
+class Node {
+public:
     T value;
     Node* next;
 
-    //конструкторы
-    Node(T val, Node* following) : value(val), next(following) {}
-    Node(T val) : value(val), next(nullptr) {}
-    Node() : value(T()), next(nullptr){} //не уверен, но тут могут возникать ошибки, если нет конструктора по умолчанию для АТД
+    Node(T val, Node* following) : value(std::move(val)), next(following) {}
+    explicit Node(T val) : value(std::move(val)), next(nullptr) {}
+    Node() : value(T()), next(nullptr){}
 };
 
 template struct Node<int>;

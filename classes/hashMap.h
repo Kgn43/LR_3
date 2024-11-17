@@ -5,10 +5,11 @@
 #include "arr.h"
 #include "Pair.h"
 #include <iostream>
-using namespace std;
 
+using std::endl, std::cout, std::string;
 
-struct hashMap {
+class hashMap {
+public:
     arr<List<Pair>> buckets;
     size_t bucketCount;
     size_t pairCount;
@@ -24,7 +25,6 @@ struct hashMap {
     Pair Get(const string& key) const;
     Pair Get() const;
 
-
     friend ostream& operator<<(ostream& os, const hashMap& hS) {
         os << "{";
         for (size_t i = 0; i < hS.bucketCount; i++){
@@ -37,12 +37,9 @@ struct hashMap {
         return os;
     }
 
-
 };
 
-    hashMap hMFromStr(const string& line);
-    string strFromHM(hashMap input);
-
-
+hashMap hMFromStr(const string& line);
+string strFromHM(hashMap input);
 
 #endif //HASHMAP_H

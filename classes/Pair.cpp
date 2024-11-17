@@ -1,6 +1,5 @@
 #include "Pair.h"
 
-
 Pair splitToPair(const string &inputLine, const char &delimiter) {
     string word;
     Pair output;
@@ -17,7 +16,6 @@ Pair splitToPair(const string &inputLine, const char &delimiter) {
     output.value = word;
     return output;
 }
-
 
 string unsplitFromPair(const Pair &input, const char &delimiter) {
     return input.key + delimiter + input.value;

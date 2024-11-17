@@ -8,8 +8,6 @@ size_t hashMap::hash(const string& key) const {
     return hash % this->bucketCount;
 }
 
-
-
 void hashMap::coliseum() {
     hashMap newSet(this->bucketCount + 1);
     List<Pair> oneBucket;
@@ -46,7 +44,6 @@ void hashMap::insert(const string& key, const string& value) {
     }
 }
 
-
 void hashMap::insert(const Pair& input) {
     size_t thisHash = hash(input.key);
     bool isExist = false;
@@ -64,12 +61,6 @@ void hashMap::insert(const Pair& input) {
         cout << "Pair with key " << input.key << " already in this hashMap" << endl;
     }
 }
-
-/*
-const size_t thisHash = hash(value);
-this->buckets[thisHash].delByVal(value);
- */
-
 
 void hashMap::del(const string& key) {
     size_t thisHash = hash(key);
@@ -91,17 +82,15 @@ void hashMap::del(const string& key) {
                 this->pairCount--;
                 break;
             }
-            else if(node->next != nullptr){ //удалить первый узел
+            if(node->next != nullptr){ //удалить первый узел
                 oneBucket.delFirst();
                 this->buckets[thisHash].first = this->buckets[thisHash].first->next;
                 this->pairCount--;
                 break;
             }
-            else { //удалить последний
-                oneBucket.delLast();
-                this->pairCount--;
-                break;
-            }
+            oneBucket.delLast();
+            this->pairCount--;
+            break;
         }
         node = node->next;
     }
@@ -119,15 +108,12 @@ Pair hashMap::Get(const string &key) const {
     return {};
 }
 
-
 Pair hashMap::Get() const {
     for (size_t i = 0; i < this->buckets.size; ++i){
         if (this->buckets[i].first != nullptr) return this->buckets[i].first->value;
     }
     return {};
 }
-
-
 
 hashMap hMFromStr(const string& line){
     arr<string> pairs = splitToArr(line, "_NEXT_");
@@ -137,7 +123,6 @@ hashMap hMFromStr(const string& line){
     }
     return output;
 }
-
 
 string strFromHM(hashMap input){
     string output;

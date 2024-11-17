@@ -7,11 +7,11 @@
 using namespace std;
 
 template<typename T>
-struct sList {
+class sList {
+public:
     Node<T>* head;
 
-    sList() : head(nullptr) {} //конструктор
-
+    sList() : head(nullptr) {}
 
     void headInsert(T value);
     void backInsert(T value);

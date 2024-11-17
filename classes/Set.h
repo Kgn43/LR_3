@@ -9,18 +9,21 @@
 
 using std::cout, std::endl, std::ostream, std::to_string;
 
-
-struct Set {
+class Set {
+public:
     arr<List<int>> buckets;
     size_t bucketCount;
     size_t pairCount;
 
-    Set(): pairCount(0), bucketCount(BUCKETS), buckets(BUCKETS){} //создаёт BUCKETS бакет
-    explicit Set(size_t num): pairCount(0), bucketCount(num), buckets(num){} //создаёт num бакетов
+    Set(): buckets(BUCKETS), bucketCount(BUCKETS), pairCount(0){} //создаёт BUCKETS бакет
+    explicit Set(const size_t num): buckets(num), bucketCount(num), pairCount(0){} //создаёт num бакетов
 
     void insert(const int& value);
     void del(const int& value);
     bool at(const int& value) const;
+    size_t hash(const int& value) const;
+    void coliseum();
+    int Get() const;
 
     friend ostream& operator<<(ostream& os, const Set& set) {
         os << "{";
@@ -46,22 +49,9 @@ struct Set {
         return os;
     }
 
-
-
-    size_t hash(const int& value) const;
-    void coliseum();
-    int Get() const {
-        for (size_t i = 0; i < this->buckets.size; ++i){
-            if (this->buckets[i].first != nullptr) return this->buckets[i].first->value;
-        }
-        //error
-        return 0;
-    }
 };
 
 Set setFromStr(const string& line);
 string strFromSet(Set input);
-
-
 
 #endif //SET_H

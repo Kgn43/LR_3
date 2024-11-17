@@ -29,7 +29,6 @@ void Stack<T>::out() {
     }
 }
 
-
 template<typename T>
 void Stack<T>::clear() {
     auto tmp = this->head;
@@ -39,7 +38,6 @@ void Stack<T>::clear() {
         this->head = tmp;
     }
 }
-
 
 Stack<string> splitToStack(const string &input, char delimiter){
     string word;
@@ -58,7 +56,6 @@ Stack<string> splitToStack(const string &input, char delimiter){
     }
     return output;
 }
-
 
 string unSplitStack(const Stack<string>& input, char delimiter){
     Node<string>* curr = input.head;

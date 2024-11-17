@@ -1,6 +1,5 @@
 #include "queue.h"
 
-
 template<typename T>
 void queue<T>::push(T val) {// вставляем в хвост
     Node<T>* newElement = new Node{val};
@@ -37,7 +36,6 @@ void queue<T>::clear() {
     }
 }
 
-
 queue<string> splitToQueue(const string &input, char delimiter){
     string word;
     queue<string> output;
@@ -50,15 +48,13 @@ queue<string> splitToQueue(const string &input, char delimiter){
             word += ch;
         }
     }
-    if (word != ""){
+    if (!word.empty()){
         output.push(word);
     }
     return output;
 }
 
-
-
-string unSplitQueue(const queue<string>& input, char delimiter){
+string unSplitQueue(const queue<string>& input, const char delimiter){
     Node<string>* curr = input.head;
     string output;
     while (curr != nullptr){

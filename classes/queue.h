@@ -6,22 +6,20 @@
 using namespace std;
 
 template<typename T>
-struct queue{
+class queue{
+public:
     Node<T>* head;
     Node<T>* tail;
 
-    queue() : head(nullptr), tail(nullptr) {} //конструктор
+    queue() : head(nullptr), tail(nullptr) {}
 
-    //методы
     void push(T val);
     void pop();
     T getFirst();
     void clear();
 
-
     friend ostream& operator<<(ostream& os, const queue<T>& que) {
         Node<T>* curr = que.head;
-        //os << "{";
         while (curr != nullptr){
             os << "[" << curr->value << "]";
             if (curr->next != nullptr) {
@@ -29,10 +27,8 @@ struct queue{
             }
             curr = curr->next;
         }
-        //os << "}";
         return os;
     }
-
 
 };
 

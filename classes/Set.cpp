@@ -10,8 +10,6 @@ size_t Set::hash(const int& value) const {
     return hash % this->bucketCount;
 }
 
-
-
 void Set::coliseum() {
     Set newSet(this->bucketCount * 2);
     List<int> oneBucket;
@@ -47,7 +45,6 @@ void Set::insert(const int& value) {
     }
 }
 
-
 void Set::del(const int& value) {
     const size_t thisHash = hash(value);
     this->buckets[thisHash].delByVal(value);
@@ -67,7 +64,13 @@ bool Set::at(const int &value) const {
     return false;
 }
 
-
+int Set::Get() const {
+    for (size_t i = 0; i < this->buckets.size; ++i){
+        if (this->buckets[i].first != nullptr) return this->buckets[i].first->value;
+    }
+    //error
+    return 0;
+}
 
 Set setFromStr(const string& line){
     const arr<string> values = splitToArr(line, '_');
@@ -77,7 +80,6 @@ Set setFromStr(const string& line){
     }
     return output;
 }
-
 
 string strFromSet(Set input){
     string output;

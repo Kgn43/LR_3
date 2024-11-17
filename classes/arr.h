@@ -6,18 +6,16 @@
 using std::ostream, std::string, std::out_of_range;
 
 template <typename T>
-struct arr {
+class arr {
+public:
     T* data;
     size_t size;
     size_t capacity;
 
-    //конструктор
-    arr<T>() : data(nullptr), size(0), capacity(0) {}
+    arr() : data(nullptr), size(0), capacity(0) {}
 
-    // Конструктор с заданной длиной
-    arr<T>(size_t length) : size(length), capacity(length) {
-        data = new T[capacity];  // Выделение памяти под массив
-        // Инициализация массива значениями по умолчанию
+    arr(size_t length) : size(length), capacity(length) {
+        data = new T[capacity];
         for (size_t i = 0; i < size; ++i) {
             data[i] = T();
         }
@@ -30,8 +28,6 @@ struct arr {
     void del(size_t index);
     void clear();
 
-
-    // Перегрузка оператора вывода
     friend ostream& operator<<(ostream& os, const arr& arr) {
         os << "[";
         for (size_t i = 0; i < arr.size; ++i) {
@@ -44,7 +40,6 @@ struct arr {
         return os;
     }
 
-    // Метод для получения элемента по индексу
     T& operator[](size_t index) const {
         if (index >= size) {
             throw std::out_of_range("Index out of range");
