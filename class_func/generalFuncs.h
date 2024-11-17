@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <utility>
-#include "../structures/arr.h"
+#include "../classes/arr.h"
 
 
 

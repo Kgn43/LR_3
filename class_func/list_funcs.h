@@ -2,7 +2,7 @@
 #define LIST_FUNCS_H
 
 #include "generalFuncs.h"
-#include "../structures/list.h"
+#include "../classes/list.h"
 
 using std::cout, std::endl, std::ios, std::runtime_error, std::ifstream, std::fstream;
 

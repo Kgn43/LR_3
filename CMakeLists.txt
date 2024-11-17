@@ -5,14 +5,14 @@ project(LR_1)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(LR_1
-        structures/arr.cpp
-        structures/hashMap.cpp
-        structures/list.cpp
-        structures/Pair.cpp
-        structures/queue.cpp
-        structures/singleConnList.cpp
-        structures/Stack.cpp
-        structures/Set.cpp
+        classes/arr.cpp
+        classes/hashMap.cpp
+        classes/list.cpp
+        classes/Pair.cpp
+        classes/queue.cpp
+        classes/singleConnList.cpp
+        classes/Stack.cpp
+        classes/Set.cpp
 
         class_func/arr_funcs.cpp
         class_func/generalFuncs.cpp

@@ -2,7 +2,7 @@
 #define SET_FUNCS_H
 
 #include "generalFuncs.h"
-#include "../structures/Set.h"
+#include "../classes/Set.h"
 
 using std::ios, std::ifstream, std::fstream, std::runtime_error;
 

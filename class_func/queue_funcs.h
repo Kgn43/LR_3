@@ -2,7 +2,7 @@
 #define QUEUE_FUNCS_H
 
 #include "generalFuncs.h"
-#include "../structures/queue.h"
+#include "../classes/queue.h"
 
 void queuePush(const request& request);
 void queuePop(const request& request);

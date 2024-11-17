@@ -1,7 +1,7 @@
 #ifndef HASHMAP_FUNCS_H
 #define HASHMAP_FUNCS_H
 
-#include "../structures/hashMap.h"
+#include "../classes/hashMap.h"
 #include "generalFuncs.h"
 
 void hashSetInsert(const request& request);
