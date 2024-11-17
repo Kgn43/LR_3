@@ -25,7 +25,7 @@ public:
     ListNode<T>* first;
     ListNode<T>* last;
 
-    List<T>(): first(nullptr), last(nullptr) {}
+    List(): first(nullptr), last(nullptr) {}
 
     void headInsert(T value);
     void backInsert(T value);
