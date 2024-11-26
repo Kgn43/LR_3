@@ -31,4 +31,7 @@ lcov --capture --directory ./files --output-file coverage.info --rc geninfo_unex
 
 genhtml coverage.info --output-directory coverage_html
 
-xdg-open coverage_html/index.html
+xdg-open /home/kgn/Desktop/LR_3/boostTest/coverage_html/home/kgn/Desktop/LR_3/boostTest/classes/index.html
+
+rm -rf files/
+rm coverage.info
