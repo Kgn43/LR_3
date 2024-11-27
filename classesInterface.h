@@ -15,7 +15,6 @@
 
 string delFirstLetter(const string &input);
 
-void printOneVar(const fileData &var);
 void ultimatePrint(const request& request);
 structures getType(const string& fName);
 

@@ -9,34 +9,17 @@ void Stack<T>::push(T val) {
 
 template <typename T>
 void Stack<T>::pop() {
-    Node<T>* tmp = this->head;
-    this->head = head->next;
-    delete tmp;
-    --this->size;
+    if (this->head != nullptr) {
+        Node<T>* tmp = this->head;
+        this->head = head->next;
+        delete tmp;
+        --this->size;
+    }
 }
 
 template <typename T>
 T Stack<T>::getLast() {
     return this->head->value;
-}
-
-template <typename T>
-void Stack<T>::out() {
-    auto current = this->head;
-    while (current != nullptr){
-        cout << current->value << endl;
-        current = current->next;
-    }
-}
-
-template<typename T>
-void Stack<T>::clear() {
-    auto tmp = this->head;
-    while (this->head != nullptr){
-        tmp = tmp->next;
-        delete this->head;
-        this->head = tmp;
-    }
 }
 
 Stack<string> splitToStack(const string &input, char delimiter){

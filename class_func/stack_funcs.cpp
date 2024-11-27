@@ -1,6 +1,33 @@
 #include "stack_funcs.h"
 
 
+Stack<string> getStack(fstream &stream) {
+    size_t len;
+    stream.read(reinterpret_cast<char*>(&len), sizeof(len));
+    if (stream.eof()) throw runtime_error("data is broken");
+    Stack<string> outStack(len);
+    size_t size;
+    for (int i = 0; i < outStack.size; ++i) {
+        stream.read(reinterpret_cast<char*>(&size), sizeof(size));
+        if (i != outStack.size - 1 && stream.eof()) throw runtime_error("data is broken");
+        string sDat(size, ' '); //set buffer size
+        stream.read(sDat.data(), size);
+        outStack[i] = sDat;
+    }
+    return outStack;
+}
+
+
+void stackToFile(Stack<string> &stack, fstream &out) {
+    out.write(reinterpret_cast<char*>(&stack.size), sizeof(stack.size)); //write size of stack
+    for (int i = 0; i < stack.size; ++i) {
+        auto dataSize = stack[i].size(); //size of on element in stack
+        out.write(reinterpret_cast<char*>(&dataSize), sizeof(size_t)); //write this size
+        out.write(stack[i].c_str(), stack[i].size()); //write data
+    }
+}
+
+
 void stackPush(const request& request){
 //структура команды: push имяСтека чтоЗаписать
     fstream file(request.file, ios::in);
@@ -9,37 +36,44 @@ void stackPush(const request& request){
     if (request.query.size != 3) throw runtime_error("Wrong command syntax");
     string name = request.query[1];
     string value = request.query[2]; //что записать
-    string variableLine; //считываемая строка с файла
-    fileData var;
     bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && !varIsExist && var.type == "#STACK"){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            Stack<string> currVar = splitToStack(var.data); //определяем реальную переменную этого Типа данных
-            currVar.push(value); //закидываем то, что просят в конец
-            variableLine = var.type + ';' + var.name + ';' + unSplitStack(currVar);//превращаем переменную в текст
-            currVar.clear();//никаких утечек!
-            tmpFile << variableLine << endl;
+    char ch;
+    string varName;
+    Stack<string> var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == ']') { //check stack flag
+            varName = getVarName(file);
+            var = getStack(file);
+            if (varName == name && !varIsExist) { //right var is found
+                varIsExist = true; //don't update duplicate
+                var.push(value);
+            }
+            tmpFile.put(']'); //put stack flag
+            nameToFile(varName, tmpFile); //put stack name
+            stackToFile(var, tmpFile); //put stack data
         }
         else {
-            tmpFile << variableLine << endl;
+            tmpFile.put(ch);
         }
     }
     if (!varIsExist){
         cout << "making new Stack" << endl;
-        Stack<string> newVar;//да, делаем это всегда.
+        Stack<string> newVar;
         newVar.push(value);
-        variableLine = "#STACK;" + name + ';' + unSplitStack(newVar);//превращаем переменную в текст
-        tmpFile << variableLine;
+        tmpFile.put(']'); //put stack flag
+        nameToFile(name, tmpFile); //put stack name
+        stackToFile(newVar, tmpFile); //put stack data
     }
     file.close();
     tmpFile.close();
     file.open(request.file, ios::out);
     tmpFile.open("data/tmp.data", ios::in);
-    while (getline(tmpFile, variableLine)){
-        file << variableLine << endl;
+    while (true){
+        ch = tmpFile.get();
+        if (tmpFile.eof()) break; //exit if file is fully read
+        file << ch;
     }
     file.close();
     tmpFile.close();
@@ -53,24 +87,28 @@ void stackPop(const request& request){
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
     if (request.query.size != 2) throw runtime_error("Wrong command syntax");
     string name = request.query[1];
-    string variableLine; //считываемая строка с файла
-    fileData var;
     bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && !varIsExist && var.type == "#STACK"){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            Stack<string> currVar = splitToStack(var.data); //определяем реальную переменную этого Типа данных
-            currVar.pop(); //удаляем
-            variableLine = var.type + ';' + var.name + ';' + unSplitStack(currVar);//превращаем переменную в текст
-            if (currVar.head != nullptr){
-                tmpFile << variableLine << endl;
+    char ch;
+    string varName;
+    Stack<string> var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == ']') { //check stack flag
+            varName = getVarName(file);
+            var = getStack(file);
+            if (varName == name && !varIsExist) { //right var is found
+                varIsExist = true; //don't update duplicate
+                var.pop();
             }
-            currVar.clear();
+            if (var.size != 0) {
+                tmpFile.put(']'); //put stack flag
+                nameToFile(varName, tmpFile); //put stack name
+                stackToFile(var, tmpFile); //put stack data
+            }
         }
         else {
-            tmpFile << variableLine << endl;
+            tmpFile.put(ch);
         }
     }
     file.close();
@@ -80,8 +118,10 @@ void stackPop(const request& request){
     } else {
         file.open(request.file, ios::out);
         tmpFile.open("data/tmp.data", ios::in);
-        while (getline(tmpFile, variableLine)){
-            file << variableLine << endl;
+        while (true){
+            ch = tmpFile.get();
+            if (tmpFile.eof()) break; //exit if file is fully read
+            file << ch;
         }
         file.close();
         tmpFile.close();
@@ -94,18 +134,21 @@ void stackGet(const request& request){
     fstream file(request.file, ios::in);
     if (request.query.size != 2) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //из какого стека считать
-    string variableLine; //считываемая строка с файла
-    fileData var;
     bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && var.type == "#STACK"){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            Stack<string> currVar = splitToStack(var.data); //определяем реальную переменную этого Типа данных
-            cout << currVar.getLast() << endl;
-            currVar.clear();
-            break;
+    char ch;
+    string varName;
+    Stack<string> var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == ']') { //check stack flag
+            varName = getVarName(file);
+            var = getStack(file);
+            if (varName == name && !varIsExist) { //right var is found
+                varIsExist = true; //don't update duplicate
+                cout << var.getLast() << endl;
+                break;
+            }
         }
     }
     if (!varIsExist){

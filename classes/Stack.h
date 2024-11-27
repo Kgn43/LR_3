@@ -12,6 +12,11 @@ public:
     size_t size;
 
     Stack() : head(nullptr), size(0) {}
+    Stack(size_t len) : head(nullptr), size(0) {
+        for (size_t i = 0; i < len; ++i) {
+            this->push(T());
+        }
+    }
 
     friend ostream& operator<<(ostream& os, const Stack<T>& st) {
         auto curr = st.head;
@@ -25,11 +30,20 @@ public:
         return os;
     }
 
+    T& operator[](size_t index) const {
+        if (index >= size) {
+            throw std::out_of_range("Index out of range");
+        }
+        auto tmp = this->head;
+        for (int i = 0; i != index; ++i) {
+            tmp = tmp->next;
+        }
+        return tmp->value;
+    }
+
     void push(T val);
     void pop();
     T getLast();
-    void out();
-    void clear();
 
 };
 

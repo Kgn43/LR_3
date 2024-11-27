@@ -128,9 +128,11 @@ void arrDel(const request& request){
                 varIsExist = true; //don't update duplicate
                 var.del(index);
             }
-            tmpFile.put('@'); //put array flag
-            nameToFile(varName, tmpFile); //put array name
-            arrToFile(var, tmpFile); //put arr data
+            if (var.size != 0) {
+                tmpFile.put('@'); //put array flag
+                nameToFile(varName, tmpFile); //put array name
+                arrToFile(var, tmpFile); //put arr data
+            }
         }
         else {
             tmpFile.put(ch);
