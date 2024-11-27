@@ -1,6 +1,33 @@
 #include "queue_funcs.h"
 
 
+Queue<string> getQueue(fstream &stream) {
+    size_t len;
+    stream.read(reinterpret_cast<char*>(&len), sizeof(len));
+    if (stream.eof()) throw runtime_error("data is broken");
+    Queue<string> outQueue(len);
+    size_t size;
+    for (int i = 0; i < outQueue.size; ++i) {
+        stream.read(reinterpret_cast<char*>(&size), sizeof(size));
+        if (i != outQueue.size - 1 && stream.eof()) throw runtime_error("data is broken");
+        string sDat(size, ' '); //set buffer size
+        stream.read(sDat.data(), size);
+        outQueue[i] = sDat;
+    }
+    return outQueue;
+}
+
+
+void queueToFile(Queue<string> &queue, fstream &out) {
+    out.write(reinterpret_cast<char*>(&queue.size), sizeof(queue.size)); //write size of queue
+    for (int i = 0; i < queue.size; ++i) {
+        auto dataSize = queue[i].size(); //size of on element in queue
+        out.write(reinterpret_cast<char*>(&dataSize), sizeof(size_t)); //write this size
+        out.write(queue[i].c_str(), queue[i].size()); //write data
+    }
+}
+
+
 void queuePush(const request& request){
 //структура команды: push имяОчереди чтоЗаписать
     fstream file(request.file, ios::in);
@@ -9,37 +36,44 @@ void queuePush(const request& request){
     if (request.query.size != 3) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //имя очереди
     string value = request.query[2]; //что записать
-    string variableLine; //считываемая строка с файла
-    fileData var;
     bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && var.type == "#QUEUE" && !varIsExist){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            queue<string> currVar = splitToQueue(var.data); //определяем реальную переменную этого Типа данных
-            currVar.push(value);
-            variableLine = var.type + ';' + var.name + ';' + unSplitQueue(currVar);//превращаем переменную в текст
-            currVar.clear();
-            tmpFile << variableLine << endl;
+    char ch;
+    string varName;
+    Queue<string> var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == '\\') { //check queue flag
+            varName = getVarName(file);
+            var = getQueue(file);
+            if (varName == name && !varIsExist) { //right var is found
+                varIsExist = true; //don't update duplicate
+                var.push(value);
+            }
+            tmpFile.put('\\'); //put queue flag
+            nameToFile(varName, tmpFile); //put queue name
+            queueToFile(var, tmpFile); //put queue data
         }
         else {
-            tmpFile << variableLine << endl;
+            tmpFile.put(ch);
         }
     }
     if (!varIsExist){
         cout << "making new queue" << endl;
-        queue<string> newVar;//да, делаем это всегда.
+        Queue<string> newVar;
         newVar.push(value);
-        variableLine = "#QUEUE;" + name + ';' + unSplitQueue(newVar);//превращаем переменную в текст
-        tmpFile << variableLine;
+        tmpFile.put('\\'); //put queue flag
+        nameToFile(name, tmpFile); //put queue name
+        queueToFile(newVar, tmpFile); //put queue data
     }
     file.close();
     tmpFile.close();
     file.open(request.file, ios::out);
     tmpFile.open("data/tmp.data", ios::in);
-    while (getline(tmpFile, variableLine)){
-        file << variableLine << endl;
+    while (true){
+        ch = tmpFile.get();
+        if (tmpFile.eof()) break; //exit if file is fully read
+        file << ch;
     }
     file.close();
     tmpFile.close();
@@ -53,23 +87,28 @@ void queuePop(const request& request){
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
     if (request.query.size != 2) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //имя очереди
-    string variableLine; //считываемая строка с файла
-    fileData var;
     bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && var.type == "#QUEUE" && !varIsExist){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            queue<string> currVar = splitToQueue(var.data); //определяем реальную переменную этого Типа данных
-            currVar.pop();
-            variableLine = var.type + ';' + var.name + ';' + unSplitQueue(currVar);//превращаем переменную в текст
-            if (currVar.head != nullptr){
-                tmpFile << variableLine << endl;
+    char ch;
+    string varName;
+    Queue<string> var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == '\\') { //check queue flag
+            varName = getVarName(file);
+            var = getQueue(file);
+            if (varName == name && !varIsExist) { //right var is found
+                varIsExist = true; //don't update duplicate
+                var.pop();
+            }
+            if (var.size != 0) {
+                tmpFile.put('\\'); //put queue flag
+                nameToFile(varName, tmpFile); //put queue name
+                queueToFile(var, tmpFile); //put queue data
             }
         }
         else {
-            tmpFile << variableLine << endl;
+            tmpFile.put(ch);
         }
     }
     file.close();
@@ -79,8 +118,10 @@ void queuePop(const request& request){
     } else {
         file.open(request.file, ios::out);
         tmpFile.open("data/tmp.data", ios::in);
-        while (getline(tmpFile, variableLine)){
-            file << variableLine << endl;
+        while (true){
+            ch = tmpFile.get();
+            if (tmpFile.eof()) break; //exit if file is fully read
+            file << ch;
         }
         file.close();
         tmpFile.close();
@@ -93,21 +134,20 @@ void queueGet(const request& request){
     fstream file(request.file, ios::in);
     if (request.query.size != 2) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //в какой очереди искать
-    string variableLine; //считываемая строка с файла
-    fileData var;
-    bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && var.type == "#QUEUE"){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            queue<string> currVar = splitToQueue(var.data); //определяем реальную переменную этого Типа данных
-            cout << currVar.getFirst() << endl;
-            currVar.clear();
-            break;
+    char ch;
+    string varName;
+    Queue<string> var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == '\\') { //check queue flag
+            varName = getVarName(file);
+            var = getQueue(file);
+            if (varName == name) { //right var is found
+                cout << var.getFirst() << endl;
+                return;
+            }
         }
     }
-    if (!varIsExist){
-        cout << "This queue isn't exist" << endl;
-    }
+    cout << "This queue isn't exist" << endl;
 }

@@ -146,6 +146,11 @@ void ultimatePrint(const request& request) {
                 Stack<string> var = getStack(file);
                 cout << varName << ": " << var << '\n';
             }
+            else if (ch == '\\') { //check stack flag
+                varName = getVarName(file);
+                Queue<string> var = getQueue(file);
+                cout << varName << ": " << var << '\n';
+            }
         }
     }
     else if (request.query.size == 2) { //вывести одну переменную
@@ -167,6 +172,14 @@ void ultimatePrint(const request& request) {
             else if (ch == ']') { //check stack flag
                 varName = getVarName(file);
                 Stack<string> var = getStack(file);
+                if (varName == name) {
+                    varIsExist = true;
+                    cout << varName << ": " << var << '\n';
+                }
+            }
+            else if (ch == '\\') { //check stack flag
+                varName = getVarName(file);
+                Queue<string> var = getQueue(file);
                 if (varName == name) {
                     varIsExist = true;
                     cout << varName << ": " << var << '\n';
