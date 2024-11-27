@@ -1,7 +1,52 @@
 #include "classesInterface.h"
 
 
+// arr<string> getArr(fstream &stream) {
+//     size_t len;
+//     size_t cap;
+//     stream.read(reinterpret_cast<char*>(&cap), sizeof(cap));
+//     stream.read(reinterpret_cast<char*>(&len), sizeof(len));
+//     if (stream.eof()) throw runtime_error("data is broken");
+//     arr<string> outArr(len);
+//     size_t size;
+//     string sDat;
+//     for (int i = 0; i < outArr.size; ++i) {
+//         stream.read(reinterpret_cast<char*>(&size), sizeof(size));
+//         if (i != outArr.size - 1 && stream.eof()) throw runtime_error("data is broken");
+//         sDat = std::to_string(' ' * size);
+//         stream.read(sDat.data(), size);
+//         outArr.data[i] = sDat;
+//     }
+//     return outArr;
+// }
+//
+//
+// void arrToFile(arr<string> &array, fstream &out) {
+//     //out.put('@'); //put array flag
+//     out.write(reinterpret_cast<char*>(&array.capacity), sizeof(array.capacity)); //write capacity
+//     out.write(reinterpret_cast<char*>(&array.size), sizeof(array.size)); //write size of array
+//     for (int i = 0; i < array.size; ++i) {
+//         auto dataSize = array[i].size(); //size of on element in arr
+//         out.write(reinterpret_cast<char*>(&dataSize), sizeof(size_t)); //write this size
+//         out.write(array[i].c_str(), array[i].size()); //write data
+//     }
+// }
+
+
 int main(int argc, char *argv[]) {
+    // arr<string> ar;
+    // ar.push_back("10");
+    // ar.push_back("20");
+    // ar.push_back("30");
+    // fstream stream("in.b", ios::out);
+    // arrToFile(ar, stream);
+    // cout << ar << endl;
+    // stream.close();
+    // fstream stream2("in.b", ios::in);
+    // arr<string> ar2 = getArr(stream2);
+    // stream2.close();
+    // cout << ar2 << endl;
+    // return 0;
     try {
         request request = getRequest(argc, argv);
         if (argc == 1){
@@ -152,26 +197,35 @@ void printOneVar(const fileData &var) {
 
 
 void ultimatePrint(const request& request) {
-    ifstream file(request.file, ios::in); //откуда читаем
-    string variableLine; //считываемая строка с файла
+    fstream file(request.file, ios::in | ios::binary); //откуда читаем
     if (request.query.size == 1){ //вывести все переменные
-        fileData var;
-        while (getline(file, variableLine)) { //проверяем все существующие переменные
-            if (variableLine == " " || variableLine.empty()) continue;
-            var.getVarInfo(variableLine);
-            printOneVar(var);
+        char ch;
+        string varName;
+        while (true){
+            ch = file.get();
+            if (file.eof()) break; //exit if file is fully read
+            if (ch == '@') { //check array flag
+                varName = getVarName(file);
+                arr<string> var = getArr(file);
+                cout << varName << ' ' << var << '\n';
+            }
         }
     }
     else if (request.query.size == 2) { //вывести одну переменную
         string name = request.query[1]; //имя искомой переменной
-        fileData var;
+        char ch;
+        string varName;
         bool varIsExist = false;
-        while (getline(file, variableLine)){ //проверяем все существующие переменные
-            if (variableLine == " " || variableLine.empty()) continue;
-            var.getVarInfo(variableLine);
-            if (var.name == name){ //если такая переменная существует
-                varIsExist = true; //закрываем защёлку
-                printOneVar(var);
+        while (true){
+            ch = file.get();
+            if (file.eof()) break; //exit if file is fully read
+            if (ch == '@') { //check array flag
+                varName = getVarName(file);
+                arr<string> var = getArr(file);
+                if (varName == name) {
+                    varIsExist = true;
+                    cout << varName << ' ' << var << '\n';
+                }
             }
         }
         if (!varIsExist){

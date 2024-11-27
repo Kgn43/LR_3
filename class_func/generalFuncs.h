@@ -7,8 +7,6 @@
 #include <utility>
 #include "../classes/arr.h"
 
-
-
 enum commands{
     Get,
     push,
@@ -62,5 +60,7 @@ struct fileData{
 void callHelp();
 bool isFileExist(const std::string& fileName);
 bool isItNumber(const std::string& str);
+void nameToFile(const string &name, std::fstream &out);
+string getVarName(std::fstream &stream);
 
 #endif //GENERAL_FUNCS_H

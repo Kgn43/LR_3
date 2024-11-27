@@ -109,7 +109,12 @@ arr<string> splitToArr(const string& input, const string& delimiter){
 string unsplit(const arr<string>& array, const char delimiter){
     string output;
     for (int i = 0; i < array.size; ++i){
-        output += array[i] + delimiter;
+        if (i + 1 != array.size) {
+            output += array[i] + delimiter;
+        }
+        else {
+            output += array[i];
+        }
     }
     return output;
 }

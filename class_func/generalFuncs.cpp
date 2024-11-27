@@ -98,8 +98,8 @@ bool isFileExist(const std::string& fileName){
 }
 
 
-string delFirstLetter(const string &input){
-    string output;
+std::string delFirstLetter(const std::string &input){
+    std::string output;
     bool z = false;
     for(auto ch : input){
         if(!z){
@@ -113,7 +113,7 @@ string delFirstLetter(const string &input){
 }
 
 
-commands commandRequest(const string& input){
+commands commandRequest(const std::string& input){
     if (input == "push") return commands::push;
     if (input == "pop") return commands::pop;
     if (input == "del") return commands::del;
@@ -126,7 +126,7 @@ commands commandRequest(const string& input){
 }
 
 
-structures structRequest(const string& input){
+structures structRequest(const std::string& input){
     if (input[0] == 'S' && input[1] == 'E' && input[2] == 'T') return structures::SET;
     if (input[0] == 'A') return structures::ARRAY;
     if (input[0] == 'L') return structures::LIST;
@@ -137,7 +137,7 @@ structures structRequest(const string& input){
 }
 
 
-structures getType(const string& typeInFile){
+structures getType(const std::string& typeInFile){
     if (typeInFile == "#ARRAY") return structures::ARRAY;
     if (typeInFile == "#LIST") return structures::LIST;
     if (typeInFile == "#QUEUE") return structures::QUEUE;
@@ -151,11 +151,11 @@ structures getType(const string& typeInFile){
 request getRequest(int argc, char *argv[] ){
     request output;
     for (int i = 0; i < argc; ++i){
-        if (static_cast<string>(argv[i]) == "--help") {
+        if (static_cast<std::string>(argv[i]) == "--help") {
             output.isCallHelp = true;
             return output;
         }
-        if (static_cast<string>(argv[i]) == "--file") {
+        if (static_cast<std::string>(argv[i]) == "--file") {
             //если после флага ничего нет || если после флага другой флаг
             if (i + 1 == argc || argv[i + 1][0] == '-') { //Если первое условие выполняется - второе не приведёт к ошибке т.к. не будет проверяться
                 throw runtime_error(("Error: empty query.\n Specify what to execute"));
@@ -163,7 +163,7 @@ request getRequest(int argc, char *argv[] ){
             output.file = argv[i + 1];
             continue;
         }
-        if (static_cast<string>(argv[i]) == "--query") {
+        if (static_cast<std::string>(argv[i]) == "--query") {
             if (i + 1 == argc || argv[i + 1][0] == '-') { //если после флага ничего нет || если после флага другой флаг
                 throw runtime_error(("Error: empty query.\n Specify what to execute"));
             }
@@ -174,9 +174,6 @@ request getRequest(int argc, char *argv[] ){
 }
 
 
-
-
-
 bool isItNumber(const std::string& str) {
     for (auto ch : str) {
         if (!isdigit(ch)) return false;
@@ -185,3 +182,18 @@ bool isItNumber(const std::string& str) {
 }
 
 
+void nameToFile(const std::string &name, std::fstream &out) {
+    size_t nameLen = name.size();
+    out.write(reinterpret_cast<char*>(&nameLen), sizeof(nameLen)); //write name size
+    out.write(name.c_str(), name.size()); //write name
+}
+
+
+std::string getVarName(std::fstream &stream) {
+    size_t varNameLen;
+    stream.read(reinterpret_cast<char*>(&varNameLen), sizeof(varNameLen)); //get nameLen
+    if (stream.eof()) throw runtime_error("data is broken");
+    std::string varName(varNameLen, ' '); //set buffer size
+    stream.read(varName.data(), varNameLen); //get var name
+    return varName;
+}
