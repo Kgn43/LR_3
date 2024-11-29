@@ -151,6 +151,11 @@ void ultimatePrint(const request& request) {
                 Queue<string> var = getQueue(file);
                 cout << varName << ": " << var << '\n';
             }
+            else if (ch == '/') { //check list flag
+                varName = getVarName(file);
+                List<string> var = getList(file);
+                cout << varName << ": " << var << '\n';
+            }
         }
     }
     else if (request.query.size == 2) { //вывести одну переменную
@@ -177,9 +182,17 @@ void ultimatePrint(const request& request) {
                     cout << varName << ": " << var << '\n';
                 }
             }
-            else if (ch == '\\') { //check stack flag
+            else if (ch == '\\') { //check queue flag
                 varName = getVarName(file);
                 Queue<string> var = getQueue(file);
+                if (varName == name) {
+                    varIsExist = true;
+                    cout << varName << ": " << var << '\n';
+                }
+            }
+            else if (ch == '/') { //check list flag
+                varName = getVarName(file);
+                List<string> var = getList(file);
                 if (varName == name) {
                     varIsExist = true;
                     cout << varName << ": " << var << '\n';

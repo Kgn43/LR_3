@@ -6,6 +6,8 @@
 
 using std::cout, std::endl, std::ios, std::runtime_error, std::ifstream, std::fstream;
 
+List<string> getList(fstream &stream);
+void listToFile(List<string> &list, fstream &out);
 void listPush(const request& request);
 void listDel(const request& request);
 void listGet(const request& request);

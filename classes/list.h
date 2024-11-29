@@ -24,8 +24,15 @@ class List{
 public:
     ListNode<T>* first;
     ListNode<T>* last;
+    size_t size;
 
-    List(): first(nullptr), last(nullptr) {}
+    List(): first(nullptr), last(nullptr), size(0) {}
+
+    List(size_t len) : first(nullptr), last(nullptr), size(0) {
+        for (size_t i = 0; i < len; ++i) {
+            this->headInsert(T());
+        }
+    }
 
     void headInsert(T value);
     void backInsert(T value);
@@ -48,6 +55,16 @@ public:
         return os;
     }
 
+    T& operator[](size_t index) const {
+        if (index >= size) {
+            throw std::out_of_range("Index out of range");
+        }
+        auto tmp = this->first;
+        for (int i = 0; i != index; ++i) {
+            tmp = tmp->next;
+        }
+        return tmp->value;
+    }
 
 };
 

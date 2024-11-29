@@ -6,11 +6,13 @@ void List<T>::backInsert(T value) {
     if (last == nullptr){
         last = newLast;
         first = newLast;
+        ++this->size;
     }
     else{
         newLast->previous = last;
         last->next = newLast;
         last = newLast;
+        ++this->size;
     }
 }
 
@@ -20,11 +22,13 @@ void List<T>::headInsert(T value) {
     if (last == nullptr){
         last = newFirst;
         first = newFirst;
+        ++this->size;
     }
     else{
         first->previous = newFirst;
         newFirst->next = first;
         first = newFirst;
+        ++this->size;
     }
 }
 
@@ -34,11 +38,13 @@ void List<T>::delLast() {
         delete this->last;
         this->first = nullptr;
         this->last = nullptr;
+        --this->size;
     }
     else {
         last = last->previous;
         delete last->next;
         last->next = nullptr;
+        --this->size;
     }
 }
 
@@ -48,11 +54,13 @@ void List<T>::delFirst() {
         delete this->first;
         this->first = nullptr;
         this->last = nullptr;
+        --this->size;
     }
     else {
         this->first = this->first->next;
         delete this->first->previous;
         this->first->previous = nullptr;
+        --this->size;
     }
 }
 
@@ -84,6 +92,7 @@ void List<T>::delByVal(T val) {
             tmp->next->previous = tmp->previous;
             tmp->previous->next = tmp->next;
             delete tmp;
+            --this->size;
             return;
         }
         tmp = tmp->next;
