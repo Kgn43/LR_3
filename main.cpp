@@ -156,13 +156,17 @@ void ultimatePrint(const request& request) {
                 List<string> var = getList(file);
                 cout << varName << ": " << var << '\n';
             }
+            else if (ch == '|') { //check set flag
+                varName = getVarName(file);
+                Set var = getSet(file);
+                cout << varName << ": " << var << '\n';
+            }
         }
     }
     else if (request.query.size == 2) { //вывести одну переменную
         string name = request.query[1]; //имя искомой переменной
         char ch;
         string varName;
-        bool varIsExist = false;
         while (true){
             ch = file.get();
             if (file.eof()) break; //exit if file is fully read
@@ -170,38 +174,49 @@ void ultimatePrint(const request& request) {
                 varName = getVarName(file);
                 arr<string> var = getArr(file);
                 if (varName == name) {
-                    varIsExist = true;
                     cout << varName << ": " << var << '\n';
+                    file.close();
+                    return;
                 }
             }
             else if (ch == ']') { //check stack flag
                 varName = getVarName(file);
                 Stack<string> var = getStack(file);
                 if (varName == name) {
-                    varIsExist = true;
                     cout << varName << ": " << var << '\n';
+                    file.close();
+                    return;
                 }
             }
             else if (ch == '\\') { //check queue flag
                 varName = getVarName(file);
                 Queue<string> var = getQueue(file);
                 if (varName == name) {
-                    varIsExist = true;
                     cout << varName << ": " << var << '\n';
+                    file.close();
+                    return;
                 }
             }
             else if (ch == '/') { //check list flag
                 varName = getVarName(file);
                 List<string> var = getList(file);
                 if (varName == name) {
-                    varIsExist = true;
                     cout << varName << ": " << var << '\n';
+                    file.close();
+                    return;
+                }
+            }
+            else if (ch == '|') { //check set flag
+                varName = getVarName(file);
+                Set var = getSet(file);
+                if (varName == name) {
+                    cout << varName << ": " << var << '\n';
+                    file.close();
+                    return;
                 }
             }
         }
-        if (!varIsExist){
-            cout << "Wrong variable name" << endl;
-        }
+        cout << "Wrong variable name" << endl;
     }
     else {
         cout << "Wrong syntax" << endl;

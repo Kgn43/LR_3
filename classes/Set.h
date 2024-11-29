@@ -49,6 +49,13 @@ public:
         return os;
     }
 
+    List<int>& operator[](size_t index) const {
+        if (index >= this->bucketCount) {
+            throw std::out_of_range("Index out of range");
+        }
+        return this->buckets[index];
+    }
+
 };
 
 Set setFromStr(const string& line);

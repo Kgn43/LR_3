@@ -1,8 +1,36 @@
 #include "set_funcs.h"
 
+#include "list_funcs.h"
+
+
+Set getSet(fstream &stream) {
+    size_t len;
+    stream.read(reinterpret_cast<char*>(&len), sizeof(len));
+    if (stream.eof()) throw runtime_error("data is broken");
+    Set outSet;
+    int val;
+    for (int i = 0; i < len; ++i) {
+        stream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        if (i != len - 1 && stream.eof()) throw runtime_error("data is broken");
+        outSet.insert(val);
+    }
+    return outSet;
+}
+
+
+void setToFile(Set &set, fstream &out) {
+    out.write(reinterpret_cast<char*>(&set.pairCount), sizeof(set.pairCount)); //write size of queue
+    for (int i = 0; i < set.bucketCount; ++i) {
+        for (int j = 0; j < set[i].size; ++j) {
+            int dat = set[i][j];
+            out.write(reinterpret_cast<char*>(&dat), sizeof(int)); //write one num in set
+        }
+    }
+}
+
 
 void setAdd(const request& request) {
-    //структура команды: insert setName value
+    //структура команды: add setName value
     fstream file(request.file, ios::in);
     fstream tmpFile("data/tmp.data", ios::out);
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
@@ -12,36 +40,44 @@ void setAdd(const request& request) {
     if (!isItNumber(value)) {
         throw runtime_error("Wrong inserted value");
     }
-    string variableLine; //считываемая строка с файла
-    fileData var;
     bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && !varIsExist && var.type == "#SET"){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            Set currVar = setFromStr(var.data); //определяем реальную переменную этого Типа данных
-            currVar.insert(stoi(value)); //закидываем то, что просят
-            variableLine = var.type + ';' + var.name + ';' + strFromSet(currVar);//превращаем переменную в текст
-            tmpFile << variableLine << endl;
+    char ch;
+    string varName;
+    Set var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == '|') { //check set flag
+            varName = getVarName(file);
+            var = getSet(file);
+            if (varName == name && !varIsExist) { //right var is found
+                varIsExist = true; //don't update duplicate
+                var.insert(stoi(value));
+            }
+            tmpFile.put('|'); //put set flag
+            nameToFile(varName, tmpFile); //put set name
+            setToFile(var, tmpFile); //put set data
         }
         else {
-            tmpFile << variableLine << endl;
+            tmpFile.put(ch);
         }
     }
     if (!varIsExist){
         cout << "making new set" << endl;
-        Set newVar;//да, делаем это всегда.
+        Set newVar;
         newVar.insert(stoi(value));
-        variableLine = "#SET;" + name + ';' + strFromSet(newVar);//превращаем переменную в текст
-        tmpFile << variableLine;
+        tmpFile.put('|'); //put set flag
+        nameToFile(name, tmpFile); //put set name
+        setToFile(newVar, tmpFile); //put set data
     }
     file.close();
     tmpFile.close();
     file.open(request.file, ios::out);
     tmpFile.open("data/tmp.data", ios::in);
-    while (getline(tmpFile, variableLine)){
-        file << variableLine << endl;
+    while (true){
+        ch = tmpFile.get();
+        if (tmpFile.eof()) break; //exit if file is fully read
+        file << ch;
     }
     file.close();
     tmpFile.close();
@@ -58,23 +94,28 @@ void setDel(const request& request) {
         throw runtime_error("Wrong inserted value");
     }
     int value = stoi(request.query[2]);
-    string variableLine; //считываемая строка с файла
-    fileData var;
     bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && !varIsExist && var.type == "#SET"){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            Set currVar = setFromStr(var.data); //определяем реальную переменную этого Типа данных
-            currVar.del(value);
-            variableLine = var.type + ';' + var.name + ';' + strFromSet(currVar);//превращаем переменную в текст
-            if (currVar.pairCount != 0){
-                tmpFile << variableLine << endl;
+    char ch;
+    string varName;
+    Set var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == '|') { //check set flag
+            varName = getVarName(file);
+            var = getSet(file);
+            if (varName == name && !varIsExist) { //right var is found
+                varIsExist = true; //don't update duplicate
+                var.del(value);
+            }
+            if (var.pairCount != 0) {
+                tmpFile.put('|'); //put set flag
+                nameToFile(varName, tmpFile); //put set name
+                setToFile(var, tmpFile); //put set data
             }
         }
         else {
-            tmpFile << variableLine << endl;
+            tmpFile.put(ch);
         }
     }
     file.close();
@@ -84,8 +125,10 @@ void setDel(const request& request) {
     } else {
         file.open(request.file, ios::out);
         tmpFile.open("data/tmp.data", ios::in);
-        while (getline(tmpFile, variableLine)){
-            file << variableLine << endl;
+        while (true){
+            ch = tmpFile.get();
+            if (tmpFile.eof()) break; //exit if file is fully read
+            file << ch;
         }
         file.close();
         tmpFile.close();
@@ -100,25 +143,25 @@ void setAt(const request& request) {
         throw runtime_error("Wrong inserted value");
     }
     int value = stoi(request.query[2]);
-    string variableLine; //считываемая строка с файла
-    fileData var;
-    bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && var.type == "#SET"){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            Set currVar = setFromStr(var.data); //определяем реальную переменную этого Типа данных
-            if (currVar.at(value)){
-                cout << "value " << value << " is in the set " << name << endl;
+    char ch;
+    string varName;
+    Set var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == '|') { //check set flag
+            varName = getVarName(file);
+            var = getSet(file);
+            if (varName == name) { //right var is found
+                if (var.at(value)){
+                    cout << "value " << value << " is in the set " << name << endl;
+                }
+                else {
+                    cout << "value " << value << " isn't in the set " << name << endl;
+                }
+                return;
             }
-            else {
-                cout << "value " << value << " isn't in the set " << name << endl;
-            }
-            break;
         }
     }
-    if (!varIsExist){
-        cout << "This set isn't exist" << endl;
-    }
+    cout << "This set isn't exist" << endl;
 }
