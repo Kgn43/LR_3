@@ -1,45 +1,91 @@
 #include "hashMap_funcs.h"
 
 
+hashMap getHashMap(fstream &stream) {
+    size_t len;
+    stream.read(reinterpret_cast<char*>(&len), sizeof(len));
+    if (stream.eof()) throw runtime_error("data is broken");
+    hashMap outHashMaap;
+    size_t keySize;
+    size_t valueSize;
+    for (int i = 0; i < len; ++i) {
+        stream.read(reinterpret_cast<char*>(&keySize), sizeof(keySize));
+        if (i != len - 1 && stream.eof()) throw runtime_error("data is broken");
+        string key(keySize, ' '); //set buffer size
+        stream.read(key.data(), keySize);
+        stream.read(reinterpret_cast<char*>(&valueSize), sizeof(valueSize));
+        if (i != len - 1 && stream.eof()) throw runtime_error("data is broken");
+        string value(valueSize, ' '); //set buffer size
+        stream.read(value.data(), valueSize);
+        outHashMaap.insert(key, value);
+    }
+    return outHashMaap;
+}
+
+
+void hashMapToFile(hashMap &hm, fstream &out) {
+    out.write(reinterpret_cast<char*>(&hm.pairCount), sizeof(hm.pairCount)); //write size of hm
+    for (int i = 0; i < hm.bucketCount; ++i) {
+        for (int j = 0; j < hm[i].size; ++j) {
+            Pair dat = hm[i][j];
+            size_t keySize = dat.key.size();
+            out.write(reinterpret_cast<char*>(&keySize), sizeof(keySize)); //write one key len
+            out.write(dat.key.c_str(), keySize); //write one key
+            size_t valueSize = dat.value.size();
+            out.write(reinterpret_cast<char*>(&valueSize), sizeof(valueSize)); //write one value len
+            out.write(dat.value.c_str(), valueSize); //write one value
+        }
+    }
+}
+
+
 void hashSetInsert(const request& request){
 //структура команды: insert имяТаблицы ключ значение
-    fstream file(request.file, ios::in);
-    fstream tmpFile("data/tmp.data", ios::out);
+    fstream file(request.file, ios::in | ios::binary);
+    fstream tmpFile("data/tmp.data", ios::out | ios::binary);
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
     if (request.query.size != 4) throw runtime_error("Wrong command syntax");
     string name = request.query[1];
     string key = request.query[2]; //ключ
     string value = request.query[3]; //значение
-    string variableLine; //считываемая строка с файла
-    fileData var;
     bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && !varIsExist && var.type == "#HASHMAP"){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            hashMap currVar = hMFromStr(var.data); //определяем реальную переменную этого Типа данных
-            currVar.insert(key, value); //закидываем то, что просят
-            variableLine = var.type + ";" + var.name + ';' + strFromHM(currVar);//превращаем переменную в текст
-            tmpFile << variableLine << endl;
+    char ch;
+    string varName;
+    hashMap var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == '#') { //check hm flag
+            varName = getVarName(file);
+            var = getHashMap(file);
+            if (varName == name && !varIsExist) { //right var is found
+                varIsExist = true; //don't update duplicate
+                var.insert(key, value);
+            }
+            tmpFile.put('#'); //put hm flag
+            nameToFile(varName, tmpFile); //put hm name
+            hashMapToFile(var, tmpFile); //put hm data
         }
         else {
-            tmpFile << variableLine << endl;
+            tmpFile.put(ch);
         }
     }
     if (!varIsExist){
         cout << "making new HashMap" << endl;
-        hashMap newVar;//да, делаем это всегда.
+        hashMap newVar;
         newVar.insert(key, value);
-        variableLine = "#HASHMAP;" + name + ';' + strFromHM(newVar);//превращаем переменную в текст
-        tmpFile << variableLine;
+        tmpFile.put('#'); //put hm flag
+        nameToFile(name, tmpFile); //put hm name
+        hashMapToFile(newVar, tmpFile); //put hm data
     }
     file.close();
     tmpFile.close();
-    file.open(request.file, ios::out);
-    tmpFile.open("data/tmp.data", ios::in);
-    while (getline(tmpFile, variableLine)){
-        file << variableLine << endl;
+    file.open(request.file, ios::out | ios::binary);
+    tmpFile.open("data/tmp.data", ios::in | ios::binary);
+    while (true){
+        ch = tmpFile.get();
+        if (tmpFile.eof()) break; //exit if file is fully read
+        file << ch;
     }
     file.close();
     tmpFile.close();
@@ -48,40 +94,47 @@ void hashSetInsert(const request& request){
 
 void hashSetDel(const request& request){
     //команда: del имяТаблицы ключ
-    fstream tmpFile("data/tmp.data", ios::out);
+    fstream tmpFile("data/tmp.data", ios::out | ios::binary);
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
     fstream file(request.file, ios::in);
     if (request.query.size != 3) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //имя очереди
     string key = request.query[2];
-    string variableLine; //считываемая строка с файла
-    fileData var;
     bool varIsExist = false;
-    while (getline(file, variableLine)){ //проверяем все существующие переменные
-        if (variableLine == " " || variableLine.empty()) continue;
-        var.getVarInfo(variableLine);
-        if (var.name == name && var.type == "#HASHMAP"){ //если такая переменная существует
-            varIsExist = true; //закрываем защёлку
-            hashMap currVar = hMFromStr(var.data); //определяем реальную переменную этого Типа данных
-            currVar.del(key);
-            variableLine = var.type + ";" + var.name + ';' + strFromHM(currVar);//превращаем переменную в текст
-            if (currVar.pairCount != 0){
-                tmpFile << variableLine << endl;
+    char ch;
+    string varName;
+    hashMap var;
+    while (true){
+        ch = file.get();
+        if (file.eof()) break; //exit if file is fully read
+        if (ch == '#') { //check hm flag
+            varName = getVarName(file);
+            var = getHashMap(file);
+            if (varName == name && !varIsExist) { //right var is found
+                varIsExist = true; //don't update duplicate
+                var.del(key);
+            }
+            if (var.pairCount != 0) {
+                tmpFile.put('#'); //put hm flag
+                nameToFile(varName, tmpFile); //put hm name
+                hashMapToFile(var, tmpFile); //put hm data
             }
         }
         else {
-            tmpFile << variableLine << endl;
+            tmpFile.put(ch);
         }
     }
     file.close();
     tmpFile.close();
     if (!varIsExist){
-        cout << "Tis hashMap doesn't exist" << endl;
+        cout << "This hashMap doesn't exist" << endl;
     } else {
-        file.open(request.file, ios::out);
-        tmpFile.open("data/tmp.data", ios::in);
-        while (getline(tmpFile, variableLine)){
-            file << variableLine << endl;
+        file.open(request.file, ios::out | ios::binary);
+        tmpFile.open("data/tmp.data", ios::in | ios::binary);
+        while (true){
+            ch = tmpFile.get();
+            if (tmpFile.eof()) break; //exit if file is fully read
+            file << ch;
         }
         file.close();
         tmpFile.close();
@@ -90,55 +143,33 @@ void hashSetDel(const request& request){
 
 
 void hashSetGet(const request& request){
-//структура команды: Get имяТаблицы [ключ]
-    fstream file(request.file, ios::in);
-    if (request.query.size == 2) {
-        string name = request.query[1];
-        string variableLine; //считываемая строка с файла
-        fileData var;
-        bool varIsExist = false;
-        while (getline(file, variableLine)){ //проверяем все существующие переменные
-            if (variableLine == " " || variableLine.empty()) continue;
-            var.getVarInfo(variableLine);
-            if (var.name == name && var.type == "#HASHMAP") { //если такая переменная существует
-                varIsExist = true; //закрываем защёлку
-                hashMap currVar = hMFromStr(var.data); //определяем реальную переменную этого Типа данных
-                cout << currVar.Get() << endl;
-            }
-        }
-        if (!varIsExist){
-            cout << "This hashMap isn't exist" << endl;
-        }
-    }
-    else if (request.query.size == 3){
+//структура команды: Get имяТаблицы ключ
+    fstream file(request.file, ios::in | ios::binary);
+    if (request.query.size == 3){
         string name = request.query[1];
         string key = request.query[2];
-        string variableLine; //считываемая строка с файла
-        fileData var;
-        bool varIsExist = false;
-        while (getline(file, variableLine)){ //проверяем все существующие переменные
-            if (variableLine == " " || variableLine.empty()) continue;
-            var.getVarInfo(variableLine);
-            if (var.name == name && var.type == "#HASHMAP"){ //если такая переменная существует
-                varIsExist = true; //закрываем защёлку
-                hashMap currVar = hMFromStr(var.data); //определяем реальную переменную этого Типа данных
-                if (currVar.pairCount == 0) cout << "this HashMap is empty" << endl;
-                else {
-                    if (currVar.Get(key).key.empty()){
+        char ch;
+        string varName;
+        hashMap var;
+        while (true){
+            ch = file.get();
+            if (file.eof()) break; //exit if file is fully read
+            if (ch == '#') { //check hm flag
+                varName = getVarName(file);
+                var = getHashMap(file);
+                if (varName == name) { //right var is found
+                    if (var.Get(key).key.empty()){ //kringe
                         cout << "there is no value for this key" << endl;
                     }
                     else {
-                        cout << currVar.Get(key) << endl;
+                        cout << var.Get(key) << endl;
                     }
+                    return;
                 }
-                break;
             }
         }
-        if (!varIsExist){
-            cout << "This hashMap isn't exist" << endl;
-        }
+        cout << "This hashMap isn't exist" << endl;
     }
     else throw runtime_error("Wrong command syntax");
-
 }
 

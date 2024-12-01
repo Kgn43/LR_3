@@ -37,6 +37,13 @@ public:
         return os;
     }
 
+    List<Pair>& operator[](size_t index) const {
+        if (index >= this->bucketCount) {
+            throw std::out_of_range("Index out of range");
+        }
+        return this->buckets[index];
+    }
+
 };
 
 hashMap hMFromStr(const string& line);

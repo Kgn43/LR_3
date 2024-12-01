@@ -146,7 +146,7 @@ void ultimatePrint(const request& request) {
                 Stack<string> var = getStack(file);
                 cout << varName << ": " << var << '\n';
             }
-            else if (ch == '\\') { //check stack flag
+            else if (ch == '\\') { //check queue flag
                 varName = getVarName(file);
                 Queue<string> var = getQueue(file);
                 cout << varName << ": " << var << '\n';
@@ -159,6 +159,11 @@ void ultimatePrint(const request& request) {
             else if (ch == '|') { //check set flag
                 varName = getVarName(file);
                 Set var = getSet(file);
+                cout << varName << ": " << var << '\n';
+            }
+            else if (ch == '#') { //check hm flag
+                varName = getVarName(file);
+                hashMap var = getHashMap(file);
                 cout << varName << ": " << var << '\n';
             }
         }
@@ -209,6 +214,15 @@ void ultimatePrint(const request& request) {
             else if (ch == '|') { //check set flag
                 varName = getVarName(file);
                 Set var = getSet(file);
+                if (varName == name) {
+                    cout << varName << ": " << var << '\n';
+                    file.close();
+                    return;
+                }
+            }
+            else if (ch == '#') { //check hm flag
+                varName = getVarName(file);
+                hashMap var = getHashMap(file);
                 if (varName == name) {
                     cout << varName << ": " << var << '\n';
                     file.close();

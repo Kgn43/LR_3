@@ -64,36 +64,8 @@ void hashMap::insert(const Pair& input) {
 
 void hashMap::del(const string& key) {
     size_t thisHash = hash(key);
-    List<Pair> oneBucket = this->buckets[thisHash];
-    ListNode<Pair>* node = oneBucket.first;
-    if (node->next == nullptr){ //остался один узел
-            delete node;
-            this->buckets[thisHash].first = nullptr;
-            this->buckets[thisHash].last = nullptr;
-            this->pairCount--;
-            return;
-    }
-    while(node != nullptr){
-        if (node->value.key == key){
-            if (node->next != nullptr && node->previous != nullptr){ //удаляем не с краю
-                node->next->previous = node->previous;
-                node->previous->next = node->next;
-                delete node;
-                this->pairCount--;
-                break;
-            }
-            if(node->next != nullptr){ //удалить первый узел
-                oneBucket.delFirst();
-                this->buckets[thisHash].first = this->buckets[thisHash].first->next;
-                this->pairCount--;
-                break;
-            }
-            oneBucket.delLast();
-            this->pairCount--;
-            break;
-        }
-        node = node->next;
-    }
+    this->buckets[thisHash].delByVal({key, key});
+    --this->pairCount;
 }
 
 Pair hashMap::Get(const string &key) const {
