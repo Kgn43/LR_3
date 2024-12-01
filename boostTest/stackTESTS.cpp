@@ -11,6 +11,12 @@ BOOST_AUTO_TEST_CASE(test_stack_create_obj) {
     BOOST_CHECK(stack1 != nullptr);
     BOOST_CHECK(stack2 != nullptr);
     BOOST_CHECK(stack3 != nullptr);
+    const auto stack4 = new Stack<int>(10);
+    const auto stack5 = new Stack<string>(10);
+    const auto stack6 = new Stack<char>(10);
+    BOOST_CHECK(stack4 != nullptr);
+    BOOST_CHECK(stack5 != nullptr);
+    BOOST_CHECK(stack6 != nullptr);
 }
 
 
@@ -18,18 +24,18 @@ BOOST_AUTO_TEST_CASE(test_stack_push) {
     Stack<int> queue;
     queue.push(2);
     queue.push(1);
-    BOOST_CHECK(queue.head->value == 1);
-    BOOST_CHECK(queue.size == 2);
+    BOOST_CHECK(queue.getLast() == 1);
+    BOOST_CHECK(queue.get_size() == 2);
     Stack<string> queue2;
     queue2.push("2");
     queue2.push("1");
-    BOOST_CHECK(queue2.head->value == "1");
-    BOOST_CHECK(queue.size == 2);
+    BOOST_CHECK(queue2.getLast() == "1");
+    BOOST_CHECK(queue2.get_size() == 2);
     Stack<char> queue3;
     queue3.push('2');
     queue3.push('1');
-    BOOST_CHECK(queue3.head->value == '1');
-    BOOST_CHECK(queue.size == 2);
+    BOOST_CHECK(queue3.getLast() == '1');
+    BOOST_CHECK(queue3.get_size() == 2);
 }
 
 
@@ -38,23 +44,23 @@ BOOST_AUTO_TEST_CASE(test_stack_pop) {
     queue.push(2);
     queue.push(1);
     queue.pop();
-    BOOST_CHECK(queue.head->value == 2);
+    BOOST_CHECK(queue.getLast() == 2);
     queue.pop();
-    BOOST_CHECK(queue.head == nullptr);
+    BOOST_CHECK_THROW(int i = queue[0], std::out_of_range);
     Stack<string> queue2;
     queue2.push("2");
     queue2.push("1");
     queue2.pop();
-    BOOST_CHECK(queue2.head->value == "2");
+    BOOST_CHECK(queue2.getLast() == "2");
     queue2.pop();
-    BOOST_CHECK(queue2.head == nullptr);
+    BOOST_CHECK_THROW(string s = queue2[0], std::out_of_range);
     Stack<char> queue3;
     queue3.push('2');
     queue3.push('1');
     queue3.pop();
-    BOOST_CHECK(queue3.head->value == '2');
+    BOOST_CHECK(queue3.getLast() == '2');
     queue3.pop();
-    BOOST_CHECK(queue3.head == nullptr);
+    BOOST_CHECK_THROW(char c = queue3[0], std::out_of_range);
 }
 
 
@@ -80,17 +86,24 @@ BOOST_AUTO_TEST_CASE(test_sttack_operator) {
     std::stringstream stream;
     stream << queue;
     BOOST_CHECK(stream.str() == "[2] -> [1]");
-}
+    BOOST_CHECK(queue[0] == 2);
+    BOOST_CHECK_THROW(queue[100], std::out_of_range);
 
-
-BOOST_AUTO_TEST_CASE(test_stack_split_and_unsplit) {
     Stack<string> queue1;
     queue1.push("1");
     queue1.push("2");
-    const string str1 = unSplitStack(queue1, ' ');
-    BOOST_CHECK(str1 == "1 2 ");
-    string str2 = "1,2,3";
-    const Stack<string> queue2 = splitToStack(str2, ',');
-    BOOST_CHECK(queue2.head->value == "3");
-    BOOST_CHECK(queue2.size == 3);
+    std::stringstream stream1;
+    stream1 << queue1;
+    BOOST_CHECK(stream1.str() == "[2] -> [1]");
+    BOOST_CHECK(queue1[0] == "2");
+    BOOST_CHECK_THROW(queue1[100], std::out_of_range);
+
+    Stack<char> queue2;
+    queue2.push('1');
+    queue2.push('2');
+    std::stringstream stream2;
+    stream2 << queue2;
+    BOOST_CHECK(stream2.str() == "[2] -> [1]");
+    BOOST_CHECK(queue2[0] == '2');
+    BOOST_CHECK_THROW(queue2[100], std::out_of_range);
 }

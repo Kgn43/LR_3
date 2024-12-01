@@ -7,11 +7,11 @@ g++ -g -O0 --coverage -o files/testsArr arrayTESTS.cpp classes/arr.cpp
 
 ./files/testsArr
 
-g++ -g -O0 --coverage -o files/testsHashMap hashMapTESTS.cpp classes/arr.cpp classes/list.cpp classes/Pair.cpp classes/hashMap.cpp
+g++ -g -O0 --coverage -o files/testsHashMap hashMapTESTS.cpp classes/arr.cpp classes/list.cpp classes/hashMap.cpp
 
 ./files/testsHashMap
 
-g++ -g -O0 --coverage -o files/testsList listTESTS.cpp classes/list.cpp classes/Pair.cpp
+g++ -g -O0 --coverage -o files/testsList listTESTS.cpp classes/list.cpp
 
 ./files/testsList
 

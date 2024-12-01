@@ -7,12 +7,18 @@ BOOST_AUTO_TEST_CASE(test_create_obj) {
     const auto list_1 = new List<int>;
     const auto list_2 = new List<string>;
     const auto list_3 = new List<Pair>;
+    const auto list_4 = new List<int>(10);
+    const auto list_5 = new List<string>(10);
+    const auto list_6 = new List<Pair>(10);
     const auto node_1 = new ListNode<Pair>;
     const auto node_2 = new ListNode<string>("123", nullptr, nullptr);
     const auto node_3 = new ListNode<int>(1);
     BOOST_CHECK(list_1 != nullptr);
     BOOST_CHECK(list_2 != nullptr);
     BOOST_CHECK(list_3 != nullptr);
+    BOOST_CHECK(list_4 != nullptr);
+    BOOST_CHECK(list_5 != nullptr);
+    BOOST_CHECK(list_6 != nullptr);
     BOOST_CHECK(node_1 != nullptr);
     BOOST_CHECK(node_2 != nullptr);
     BOOST_CHECK(node_3 != nullptr);
@@ -39,10 +45,8 @@ BOOST_AUTO_TEST_CASE(test_list_int_insert) {
     list.backInsert(4);
     List<int> list_2;
     list_2.backInsert(0);
-    BOOST_CHECK(list.first->value == 1);
-    BOOST_CHECK(list.last->value == 4);
-    BOOST_CHECK(list.first->next->value == 2);
-    BOOST_CHECK(list_2.first == list_2.last);
+    BOOST_CHECK(list[0] == 1);
+    BOOST_CHECK(list[list.get_size() - 1] == 4);
 }
 
 
@@ -54,10 +58,8 @@ BOOST_AUTO_TEST_CASE(test_list_string_insert) {
     list.backInsert("4");
     List<string> list_2;
     list_2.backInsert("0");
-    BOOST_CHECK(list.first->value == "1");
-    BOOST_CHECK(list.last->value == "4");
-    BOOST_CHECK(list.first->next->value == "2");
-    BOOST_CHECK(list_2.first == list_2.last);
+    BOOST_CHECK(list[0] == "1");
+    BOOST_CHECK(list[list.get_size() - 1] == "4");
 }
 
 
@@ -69,10 +71,8 @@ BOOST_AUTO_TEST_CASE(test_list_pair_insert) {
     list.backInsert({"4", "4"});
     List<Pair> list_2;
     list_2.backInsert({"0", "0"});
-    BOOST_CHECK(list.first->value.key == "1");
-    BOOST_CHECK(list.last->value.key == "4");
-    BOOST_CHECK(list.first->next->value.key == "2");
-    BOOST_CHECK(list_2.first == list_2.last);
+    BOOST_CHECK(list[0].key == "1");
+    BOOST_CHECK(list[list.get_size() - 1].key == "4");
 }
 
 
@@ -104,16 +104,18 @@ BOOST_AUTO_TEST_CASE(test_list_int_del) {
     list.headInsert(2);
     list.headInsert(1);
     list.delFirst();
-    BOOST_CHECK(list.first->value == 2);
+    BOOST_CHECK(list[0] == 2);
     list.delLast();
-    BOOST_CHECK(list.last->value == 2);
+    BOOST_CHECK(list[list.get_size() - 1] == 2);
     List<int> list_2;
     list_2.backInsert(1);
     list_2.delFirst();
-    BOOST_CHECK(list_2.first == nullptr && list_2.last == nullptr);
+    BOOST_CHECK(list_2.get_size() == 0);
+    BOOST_CHECK_THROW(list_2[0], std::out_of_range);
     list_2.backInsert(1);
     list_2.delLast();
-    BOOST_CHECK(list_2.first == nullptr && list_2.last == nullptr);
+    BOOST_CHECK(list_2.get_size() == 0);
+    BOOST_CHECK_THROW(list_2[0], std::out_of_range);
     List<int> list_3;
     list_3.backInsert(1);
     list_3.backInsert(2);
@@ -123,11 +125,11 @@ BOOST_AUTO_TEST_CASE(test_list_int_del) {
     list_3.backInsert(6);
     list_3.backInsert(7);
     list_3.delByVal(1);
-    BOOST_CHECK(list_3.first->value == 2);
+    BOOST_CHECK(list_3[0] == 2);
     list_3.delByVal(7);
-    BOOST_CHECK(list_3.last->value == 6);
+    BOOST_CHECK(list_3[4]== 6);
     list_3.delByVal(3);
-    BOOST_CHECK(list_3.first->next->value == 4);
+    BOOST_CHECK(list_3[1] == 4);
     BOOST_CHECK_THROW(list_3.delByVal(1000), std::runtime_error);
 }
 
@@ -138,16 +140,18 @@ BOOST_AUTO_TEST_CASE(test_list_string_del) {
     list.headInsert("2");
     list.headInsert("1");
     list.delFirst();
-    BOOST_CHECK(list.first->value == "2");
+    BOOST_CHECK(list[0] == "2");
     list.delLast();
-    BOOST_CHECK(list.last->value == "2");
+    BOOST_CHECK(list[list.get_size() - 1] == "2");
     List<string> list_2;
     list_2.backInsert("1");
     list_2.delFirst();
-    BOOST_CHECK(list_2.first == nullptr && list_2.last == nullptr);
+    BOOST_CHECK(list_2.get_size() == 0);
+    BOOST_CHECK_THROW(list_2[0], std::out_of_range);
     list_2.backInsert("1");
     list_2.delLast();
-    BOOST_CHECK(list_2.first == nullptr && list_2.last == nullptr);
+    BOOST_CHECK(list_2.get_size() == 0);
+    BOOST_CHECK_THROW(list_2[0], std::out_of_range);
     List<string> list_3;
     list_3.backInsert("1");
     list_3.backInsert("2");
@@ -157,36 +161,39 @@ BOOST_AUTO_TEST_CASE(test_list_string_del) {
     list_3.backInsert("6");
     list_3.backInsert("7");
     list_3.delByVal("1");
-    BOOST_CHECK(list_3.first->value == "2");
+    BOOST_CHECK(list_3[0] == "2");
     list_3.delByVal("7");
-    BOOST_CHECK(list_3.last->value == "6");
+    BOOST_CHECK(list_3[4]== "6");
     list_3.delByVal("3");
-    BOOST_CHECK(list_3.first->next->value == "4");
+    BOOST_CHECK(list_3[1] == "4");
     BOOST_CHECK_THROW(list_3.delByVal("1000"), std::runtime_error);
 }
 
 
 BOOST_AUTO_TEST_CASE(test_list_pair_del) {
     List<Pair> list;
+    list.headInsert({"4", "4"});
     list.headInsert({"3", "3"});
     list.headInsert({"2", "2"});
     list.headInsert({"1", "1"});
     list.delFirst();
-    BOOST_CHECK(list.first->value.key == "2");
+    BOOST_CHECK(list[0].key == "2");
     list.delLast();
-    BOOST_CHECK(list.last->value.key == "2");
+    BOOST_CHECK(list[1].key == "3");
     List<Pair> list_2;
     list_2.backInsert({"3", "3"});
     list_2.delFirst();
-    BOOST_CHECK(list_2.first == nullptr && list_2.last == nullptr);
+    BOOST_CHECK(list_2.get_size() == 0);
+    BOOST_CHECK_THROW(list_2[0], std::out_of_range);
     list_2.backInsert({"3", "3"});
     list_2.delLast();
-    BOOST_CHECK(list_2.first == nullptr && list_2.last == nullptr);
+    BOOST_CHECK(list_2.get_size() == 0);
+    BOOST_CHECK_THROW(list_2[0], std::out_of_range);
     List<Pair> list_3;
     list_3.backInsert({"1", "1"});
     list_3.backInsert({"3", "3"});
     list_3.delByVal({"3", "3"});
-    BOOST_CHECK(list_3.first->value.key == "1");
+    BOOST_CHECK(list_3[0].key == "1");
 }
 
 
@@ -211,20 +218,4 @@ BOOST_AUTO_TEST_CASE(test_list_find) {
     BOOST_CHECK(isFined2 == true);
     isFined2 = list2.find({"100", "100"});
     BOOST_CHECK(isFined2 == false);
-}
-
-
-BOOST_AUTO_TEST_CASE(test_split_and_unsplit) {
-    const string str1 = "1 2 3";
-    const List<string> list = splitToList(str1, ' ');
-    BOOST_CHECK(list.first->value == "1" && list.last->value == "3");
-    List<string> list2;
-    list2.backInsert("1");
-    list2.backInsert("2");
-    list2.backInsert("3");
-    const string str2 = unSplitList(list2);
-    BOOST_CHECK(str2 == str1 + ' ');
-    const string str3 = "1,1___2,2___3_,3";
-    const List<Pair> list_3 = splitToListPair(str3, "___", ',');
-    BOOST_CHECK(list_3.first->value.key == "1");
 }

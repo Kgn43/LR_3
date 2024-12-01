@@ -4,69 +4,71 @@
 
 #include "classes/singleConnList.h"
 
-BOOST_AUTO_TEST_CASE(test_create_obj) {
+BOOST_AUTO_TEST_CASE(test_create_scl_obj) {
     const auto slist_1 = new sList<int>;
     const auto slist_2 = new sList<string>;
     BOOST_CHECK(slist_1 != nullptr);
     BOOST_CHECK(slist_2 != nullptr);
 }
 
-BOOST_AUTO_TEST_CASE(test_insert) {
+BOOST_AUTO_TEST_CASE(test_scl_insert) {
     sList<int> list;
     list.headInsert(2);
     list.headInsert(1);
     list.backInsert(3);
-    BOOST_CHECK(list.head->value == 1);
-    BOOST_CHECK(list.head->next->next->value == 3);
+    BOOST_CHECK(list[0] == 1);
+    BOOST_CHECK(list[2] == 3);
     sList<string> list2;
     list2.headInsert("2");
     list2.headInsert("1");
     list2.backInsert("3");
-    BOOST_CHECK(list2.head->value == "1");
-    BOOST_CHECK(list2.head->next->next->value == "3");
+    BOOST_CHECK(list2[0] == "1");
+    BOOST_CHECK(list2[2] == "3");
 }
 
 
-BOOST_AUTO_TEST_CASE(test_del) {
+BOOST_AUTO_TEST_CASE(test_scl_del) {
     sList<int> list_1;
+    list_1.headInsert(4);
     list_1.headInsert(3);
     list_1.headInsert(2);
     list_1.headInsert(1);
     list_1.delFirst();
-    BOOST_CHECK(list_1.head->value == 2);
-    list_1.delLast();
-    BOOST_CHECK(list_1.head->next == nullptr);
-    sList<int> list_2;
-    list_2.headInsert(4);
-    list_2.headInsert(3);
-    list_2.headInsert(2);
-    list_2.headInsert(1);
-    list_2.delByVal(1);
-    BOOST_CHECK(list_2.head->value == 2);
+    BOOST_CHECK(list_1[0]== 2);
+   list_1.delLast();
+   BOOST_CHECK(list_1[1] == 3);
+   sList<int> list_2;
+   list_2.headInsert(4);
+   list_2.headInsert(3);
+   list_2.headInsert(2);
+   list_2.headInsert(1);
+   list_2.delByVal(1);
+   BOOST_CHECK(list_2[0]== 2);
     list_2.delByVal(4);
-    BOOST_CHECK(list_2.head->next->next == nullptr);
-    list_2.delByVal(888);
+   BOOST_CHECK(list_2[1] == 3);
+   list_2.delByVal(888);
 }
 
 
 BOOST_AUTO_TEST_CASE(test_scl_del_str) {
     sList<string> list_1;
+    list_1.headInsert("4");
     list_1.headInsert("3");
     list_1.headInsert("2");
     list_1.headInsert("1");
     list_1.delFirst();
-    BOOST_CHECK(list_1.head->value == "2");
+    BOOST_CHECK(list_1[0]== "2");
     list_1.delLast();
-    BOOST_CHECK(list_1.head->next == nullptr);
+    BOOST_CHECK(list_1[1] == "3");
     sList<string> list_2;
     list_2.headInsert("4");
     list_2.headInsert("3");
     list_2.headInsert("2");
     list_2.headInsert("1");
     list_2.delByVal("1");
-    BOOST_CHECK(list_2.head->value == "2");
+    BOOST_CHECK(list_1[0]== "2");
     list_2.delByVal("4");
-    BOOST_CHECK(list_2.head->next->next == nullptr);
+    BOOST_CHECK(list_1[1] == "3");
     list_2.delByVal("888");
 }
 

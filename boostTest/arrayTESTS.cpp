@@ -10,8 +10,8 @@ BOOST_AUTO_TEST_CASE(test_create_obj) {
     BOOST_CHECK(stringArray != nullptr);
     const arr<int> arr1(3);
     const arr<string> arr2(3);
-    BOOST_CHECK(arr1.size == 3);
-    BOOST_CHECK(arr2.size == 3);
+    BOOST_CHECK(arr1.get_size() == 3);
+    BOOST_CHECK(arr2.get_size() == 3);
 }
 
 
@@ -25,11 +25,11 @@ BOOST_AUTO_TEST_CASE(test_push_back) {
     stringArray.push_back("1");
     stringArray.push_back("2");
 
-    BOOST_CHECK(intArray.size == 3);
+    BOOST_CHECK(intArray.get_size() == 3);
     BOOST_CHECK(intArray[0] == 1);
     BOOST_CHECK(intArray[1] == 2);
     BOOST_CHECK(intArray[2] == 3);
-    BOOST_CHECK(stringArray.size == 3);
+    BOOST_CHECK(stringArray.get_size() == 3);
     BOOST_CHECK(stringArray[0] == "0");
     BOOST_CHECK(stringArray[1] == "1");
     BOOST_CHECK(stringArray[2] == "2");
@@ -42,8 +42,8 @@ BOOST_AUTO_TEST_CASE(test_get_size) {
     intArray.push_back(0);
     intArray.push_back(1);
     stringArray.push_back("0");
-    BOOST_CHECK(intArray.getSize() == 2);
-    BOOST_CHECK(stringArray.getSize() == 1);
+    BOOST_CHECK(intArray.get_size() == 2);
+    BOOST_CHECK(stringArray.get_size() == 1);
 }
 
 
@@ -76,8 +76,8 @@ BOOST_AUTO_TEST_CASE(test_erase) {
     stringArray.push_back("2");
     stringArray.erase();
     intArray.erase();
-    BOOST_CHECK(intArray.getSize() == 0);
-    BOOST_CHECK(stringArray.getSize() == 2);
+    BOOST_CHECK(intArray.get_size() == 0);
+    BOOST_CHECK(stringArray.get_size() == 2);
     BOOST_CHECK_THROW(intArray[0], out_of_range);
     BOOST_CHECK_THROW(stringArray[2], out_of_range);
     BOOST_CHECK_THROW(intArray.erase(), out_of_range);
@@ -122,10 +122,5 @@ BOOST_AUTO_TEST_CASE(test_operator) {
 BOOST_AUTO_TEST_CASE(test_split_and_unsplit) {
     const string nums = "1 2 3";
     const arr<string> numsArray = splitToArr(nums, ' ');
-    const string words = "AND_dleimeter_HIS_dleimeter_NAME_dleimeter_IS_dleimeter_JHON_dleimeter_CENA____";
-    const arr<string> wordsArray = splitToArr(words, "_dleimeter_");
     BOOST_CHECK(numsArray[0] == "1" && numsArray[1] == "2" && numsArray[2] == "3");
-    BOOST_CHECK(wordsArray.size == 6);
-    const string nums2 = unsplit(numsArray, ' ');
-    BOOST_CHECK(nums == nums2);
 }

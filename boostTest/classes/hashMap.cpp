@@ -115,22 +115,12 @@ Pair hashMap::Get() const {
     return {};
 }
 
-hashMap hMFromStr(const string& line){
-    arr<string> pairs = splitToArr(line, "_NEXT_");
-    hashMap output;
-    for (size_t i = 0; i < pairs.size; ++i){
-        output.insert(splitToPair(pairs[i], ','));
-    }
-    return output;
+
+size_t hashMap::get_size() const {
+    return this->pairCount;
 }
 
-string strFromHM(hashMap input){
-    string output;
-    Pair pair1;
-    while (input.pairCount != 0){
-        pair1 = input.Get();
-        output += unsplitFromPair(pair1, ',') + "_NEXT_";
-        input.del(pair1.key);
-    }
-    return output;
+size_t hashMap::get_bucketsCount() const {
+    return this->bucketCount;
 }
+

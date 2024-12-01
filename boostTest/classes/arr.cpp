@@ -29,7 +29,7 @@ void arr<T>::push_back(const T& value) {
 }
 
 template <typename T>
-size_t arr<T>::getSize() const  {
+size_t arr<T>::get_size() const  {
     return size;
 }
 
@@ -42,7 +42,7 @@ void arr<T>::erase() {
 }
 
 template <typename T>
-void arr<T>::del(size_t index) {
+void arr<T>::del(const size_t index) {
     if (index >= size) {
         throw std::out_of_range("Index out of range");
     }
@@ -67,47 +67,6 @@ arr<string> splitToArr(const string &input, const char delimiter){
     }
     if (word != ""){
         output.push_back(word);
-    }
-    return output;
-}
-
-arr<string> splitToArr(const string& input, const string& delimiter){
-    string word;
-    arr<string> output;
-    bool isDelim;
-    int j;
-    for (int i = 0; i < input.size(); ++i){
-        if (input[i] == delimiter[0]){
-            isDelim = true;
-            for (j = 0; j < delimiter.size(); ++j){
-                if (delimiter[j] != input[i + j]) isDelim = false;
-            }
-            if (isDelim){
-                output.push_back(word);
-                word = "";
-                i += j - 1;
-            }
-            else {
-                word += input[i];
-            }
-        }
-        else {
-            word += input[i];
-        }
-    }
-    if (!word.empty()){
-        output.push_back(word);
-    }
-    return output;
-}
-
-string unsplit(const arr<string>& array, const char delimiter){
-    string output;
-    for (int i = 0; i < array.size; ++i){
-        output += array[i];
-        if (i + 1 != array.size) {
-            output += delimiter;
-        }
     }
     return output;
 }

@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(test_create_hm) {
 }
 
 
-BOOST_AUTO_TEST_CASE(test_insert) {
+BOOST_AUTO_TEST_CASE(test_hm_insert) {
     hashMap hashmap(1);
     hashmap.insert("key1", "value1");
     hashmap.insert("key1", "value1");
@@ -21,12 +21,12 @@ BOOST_AUTO_TEST_CASE(test_insert) {
     hashmap.insert("key5", "value5");
     const Pair pair("key0","value0");
     hashmap.insert(pair);
-    BOOST_CHECK(hashmap.pairCount == 6);
-    BOOST_CHECK(hashmap.bucketCount == 3);
+    BOOST_CHECK(hashmap.get_size() == 6);
+    BOOST_CHECK(hashmap.get_bucketsCount() == 3);
 }
 
 
-BOOST_AUTO_TEST_CASE(test_get) {
+BOOST_AUTO_TEST_CASE(test_hm_get) {
     hashMap hashmap;
     const Pair nopair;
     const Pair pair1("key0","value0");
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(test_get) {
 }
 
 
-BOOST_AUTO_TEST_CASE(test_del) {
+BOOST_AUTO_TEST_CASE(test_hm_del) {
     hashMap hashmap;
     hashmap.insert("key1", "value1");
     hashmap.insert("key2", "value2");
@@ -53,36 +53,25 @@ BOOST_AUTO_TEST_CASE(test_del) {
     hashmap.insert("key10", "value10");
     hashmap.insert("key11", "value11");
     hashmap.del("key5");
-    BOOST_CHECK(hashmap.pairCount == 10);
+    BOOST_CHECK(hashmap.get_size() == 10);
     BOOST_CHECK(hashmap.Get("key5") == Pair{});
     hashmap.del("key7");
-    BOOST_CHECK(hashmap.pairCount == 9);
+    BOOST_CHECK(hashmap.get_size() == 9);
     BOOST_CHECK(hashmap.Get("key7") == Pair{});
     hashmap.del("key3");
-    BOOST_CHECK(hashmap.pairCount == 8);
+    BOOST_CHECK(hashmap.get_size() == 8);
     BOOST_CHECK(hashmap.Get("key3") == Pair{});
     hashmap.del("key10");
-    BOOST_CHECK(hashmap.pairCount == 7);
+    BOOST_CHECK(hashmap.get_size() == 7);
     BOOST_CHECK(hashmap.Get("key10") == Pair{});
 }
 
 
-BOOST_AUTO_TEST_CASE(test_operator) {
+BOOST_AUTO_TEST_CASE(test_hm_operator) {
     hashMap hashmap;
     hashmap.insert("key1", "value1");
     hashmap.insert("key2", "value2");
     std::stringstream stream;
     stream << hashmap;
     BOOST_CHECK(stream.str() == "{{[key1, value1]}, \n{[key2, value2]}}\n");
-}
-
-
-BOOST_AUTO_TEST_CASE(test_split_and_unsplit) {
-    string str = "key1,value1_NEXT_key2,value2_NEXT_";
-    hashMap hashmap;
-    hashmap.insert("key1", "value1");
-    const string str2 = strFromHM(hashmap);
-    BOOST_CHECK(str2 == "key1,value1_NEXT_");
-    const hashMap hm2 = hMFromStr(str);
-    BOOST_CHECK(hm2.bucketCount == 2 && hm2.pairCount == 2 && hm2.Get("key1") != Pair{} && hm2.Get("key2") != Pair{});
 }
