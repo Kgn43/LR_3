@@ -7,9 +7,9 @@ Stack<string> getStack(fstream &stream) {
     if (stream.eof()) throw runtime_error("data is broken");
     Stack<string> outStack(len);
     size_t size;
-    for (int i = 0; i < outStack.size; ++i) {
+    for (int i = 0; i < outStack.get_size(); ++i) {
         stream.read(reinterpret_cast<char*>(&size), sizeof(size));
-        if (i != outStack.size - 1 && stream.eof()) throw runtime_error("data is broken");
+        if (i != outStack.get_size() - 1 && stream.eof()) throw runtime_error("data is broken");
         string sDat(size, ' '); //set buffer size
         stream.read(sDat.data(), size);
         outStack[i] = sDat;
@@ -18,9 +18,10 @@ Stack<string> getStack(fstream &stream) {
 }
 
 
-void stackToFile(Stack<string> &stack, fstream &out) {
-    out.write(reinterpret_cast<char*>(&stack.size), sizeof(stack.size)); //write size of stack
-    for (int i = 0; i < stack.size; ++i) {
+void stackToFile(const Stack<string> &stack, fstream &out) {
+    auto size = stack.get_size();
+    out.write(reinterpret_cast<char*>(&size), sizeof(size)); //write size of stack
+    for (int i = 0; i < stack.get_size(); ++i) {
         auto dataSize = stack[i].size(); //size of on element in stack
         out.write(reinterpret_cast<char*>(&dataSize), sizeof(size_t)); //write this size
         out.write(stack[i].c_str(), stack[i].size()); //write data
@@ -101,7 +102,7 @@ void stackPop(const request& request){
                 varIsExist = true; //don't update duplicate
                 var.pop();
             }
-            if (var.size != 0) {
+            if (var.get_size() != 0) {
                 tmpFile.put(']'); //put stack flag
                 nameToFile(varName, tmpFile); //put stack name
                 stackToFile(var, tmpFile); //put stack data

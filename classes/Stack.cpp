@@ -22,30 +22,7 @@ T Stack<T>::getLast() {
     return this->head->value;
 }
 
-Stack<string> splitToStack(const string &input, char delimiter){
-    string word;
-    Stack<string> output;
-    for (auto ch : input){
-        if (ch == delimiter) {
-            output.push(word);
-            word = "";
-        }
-        else{
-            word += ch;
-        }
-    }
-    if (word != ""){
-        output.push(word);
-    }
-    return output;
-}
-
-string unSplitStack(const Stack<string>& input, char delimiter){
-    Node<string>* curr = input.head;
-    string output;
-    while (curr != nullptr){
-        output = curr->value + delimiter + output;
-        curr = curr->next;
-    }
-    return output;
+template<typename T>
+size_t Stack<T>::get_size() const {
+    return this->size;
 }
