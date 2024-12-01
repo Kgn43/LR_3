@@ -7,9 +7,9 @@ Queue<string> getQueue(fstream &stream) {
     if (stream.eof()) throw runtime_error("data is broken");
     Queue<string> outQueue(len);
     size_t size;
-    for (int i = 0; i < outQueue.size; ++i) {
+    for (int i = 0; i < outQueue.get_size(); ++i) {
         stream.read(reinterpret_cast<char*>(&size), sizeof(size));
-        if (i != outQueue.size - 1 && stream.eof()) throw runtime_error("data is broken");
+        if (i != outQueue.get_size() - 1 && stream.eof()) throw runtime_error("data is broken");
         string sDat(size, ' '); //set buffer size
         stream.read(sDat.data(), size);
         outQueue[i] = sDat;
@@ -18,9 +18,10 @@ Queue<string> getQueue(fstream &stream) {
 }
 
 
-void queueToFile(Queue<string> &queue, fstream &out) {
-    out.write(reinterpret_cast<char*>(&queue.size), sizeof(queue.size)); //write size of queue
-    for (int i = 0; i < queue.size; ++i) {
+void queueToFile(const Queue<string> &queue, fstream &out) {
+    auto size = queue.get_size();
+    out.write(reinterpret_cast<char*>(&size), sizeof(size)); //write size of queue
+    for (int i = 0; i < queue.get_size(); ++i) {
         auto dataSize = queue[i].size(); //size of on element in queue
         out.write(reinterpret_cast<char*>(&dataSize), sizeof(size_t)); //write this size
         out.write(queue[i].c_str(), queue[i].size()); //write data
@@ -101,7 +102,7 @@ void queuePop(const request& request){
                 varIsExist = true; //don't update duplicate
                 var.pop();
             }
-            if (var.size != 0) {
+            if (var.get_size() != 0) {
                 tmpFile.put('\\'); //put queue flag
                 nameToFile(varName, tmpFile); //put queue name
                 queueToFile(var, tmpFile); //put queue data

@@ -7,14 +7,13 @@ using namespace std;
 
 template<typename T>
 class Queue{
-public:
     Node<T>* head;
     Node<T>* tail;
     size_t size;
-
+public:
     Queue() : head(nullptr), tail(nullptr), size(0) {}
 
-    Queue(size_t len) : head(nullptr), tail(nullptr), size(0) {
+    Queue(const size_t len) : head(nullptr), tail(nullptr), size(0) {
         for (size_t i = 0; i < len; ++i) {
             this->push(T());
         }
@@ -23,6 +22,7 @@ public:
     void push(T val);
     void pop();
     T getFirst();
+    size_t get_size() const;
 
     friend ostream& operator<<(ostream& os, const Queue& que) {
         Node<T>* curr = que.head;
@@ -49,11 +49,7 @@ public:
 
 };
 
-
 template struct Queue<int>;
 template struct Queue<string>;
-
-Queue<string> splitToQueue(const string &input, char delimiter = ' ');
-string unSplitQueue(const Queue<string>& input, char delimiter = ' ');
 
 #endif // QUEUE_H

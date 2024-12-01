@@ -29,30 +29,7 @@ T Queue<T>::getFirst() {
     return this->head->value;
 }
 
-Queue<string> splitToQueue(const string &input, char delimiter){
-    string word;
-    Queue<string> output;
-    for (auto ch : input){
-        if (ch == delimiter) {
-            output.push(word);
-            word = "";
-        }
-        else{
-            word += ch;
-        }
-    }
-    if (!word.empty()){
-        output.push(word);
-    }
-    return output;
-}
-
-string unSplitQueue(const Queue<string>& input, const char delimiter){
-    Node<string>* curr = input.head;
-    string output;
-    while (curr != nullptr){
-        output += curr->value + delimiter;
-        curr = curr->next;
-    }
-    return output;
+template<typename T>
+size_t Queue<T>::get_size() const {
+    return this->size;
 }
