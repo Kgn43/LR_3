@@ -44,7 +44,7 @@ void hashSetInsert(const request& request){
     fstream file(request.file, ios::in | ios::binary);
     fstream tmpFile("data/tmp.data", ios::out | ios::binary);
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
-    if (request.query.size != 4) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 4) throw runtime_error("Wrong command syntax");
     string name = request.query[1];
     string key = request.query[2]; //ключ
     string value = request.query[3]; //значение
@@ -97,7 +97,7 @@ void hashSetDel(const request& request){
     fstream tmpFile("data/tmp.data", ios::out | ios::binary);
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
     fstream file(request.file, ios::in);
-    if (request.query.size != 3) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 3) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //имя очереди
     string key = request.query[2];
     bool varIsExist = false;
@@ -145,7 +145,7 @@ void hashSetDel(const request& request){
 void hashSetGet(const request& request){
 //структура команды: Get имяТаблицы ключ
     fstream file(request.file, ios::in | ios::binary);
-    if (request.query.size == 3){
+    if (request.query.get_size() == 3){
         string name = request.query[1];
         string key = request.query[2];
         char ch;

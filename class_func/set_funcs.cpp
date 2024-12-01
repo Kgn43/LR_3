@@ -34,7 +34,7 @@ void setAdd(const request& request) {
     fstream file(request.file, ios::in);
     fstream tmpFile("data/tmp.data", ios::out);
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
-    if (request.query.size != 3) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 3) throw runtime_error("Wrong command syntax");
     string name = request.query[1];
     string value = request.query[2]; //значение
     if (!isItNumber(value)) {
@@ -88,7 +88,7 @@ void setDel(const request& request) {
     fstream tmpFile("data/tmp.data", ios::out);
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
     fstream file(request.file, ios::in);
-    if (request.query.size != 3) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 3) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //имя очереди
     if (!isItNumber(request.query[2])) {
         throw runtime_error("Wrong inserted value");
@@ -137,7 +137,7 @@ void setDel(const request& request) {
 void setAt(const request& request) {
     //структура команды: at setName value
     fstream file(request.file, ios::in);
-    if (request.query.size != 3) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 3) throw runtime_error("Wrong command syntax");
     string name = request.query[1];
     if (!isItNumber(request.query[2])) {
         throw runtime_error("Wrong inserted value");

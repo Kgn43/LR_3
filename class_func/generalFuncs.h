@@ -47,7 +47,7 @@ struct fileData{
     void getVarInfo(const string &input) {
         arr<string> split;
         split = splitToArr(input, ';');
-        if(split.size != 3 || split[0][0] != '#') {
+        if(split.get_size() != 3 || split[0][0] != '#') {
             throw std::runtime_error("Error in fileData: data is broken");
         }
         this->type = split[0];

@@ -29,7 +29,7 @@ void arr<T>::push_back(const T& value) {
 }
 
 template <typename T>
-size_t arr<T>::getSize() const  {
+size_t arr<T>::get_size() const  {
     return size;
 }
 
@@ -42,7 +42,7 @@ void arr<T>::erase() {
 }
 
 template <typename T>
-void arr<T>::del(size_t index) {
+void arr<T>::del(const size_t index) {
     if (index >= size) {
         throw std::out_of_range("Index out of range");
     }
@@ -55,6 +55,9 @@ void arr<T>::del(size_t index) {
 template<typename T>
 void arr<T>::clear() {
     delete this->data;
+    this-> capacity = 0;
+    this->size = 0;
+    this->realoc();
 }
 
 
@@ -108,8 +111,8 @@ arr<string> splitToArr(const string& input, const string& delimiter){
 
 string unsplit(const arr<string>& array, const char delimiter){
     string output;
-    for (int i = 0; i < array.size; ++i){
-        if (i + 1 != array.size) {
+    for (int i = 0; i < array.get_size(); ++i){
+        if (i + 1 != array.get_size()) {
             output += array[i] + delimiter;
         }
         else {

@@ -34,7 +34,7 @@ void queuePush(const request& request){
     fstream file(request.file, ios::in);
     fstream tmpFile("data/tmp.data", ios::out);
     if(!tmpFile.is_open()) throw runtime_error( "Tmp file doesn't exist");
-    if (request.query.size != 3) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 3) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //имя очереди
     string value = request.query[2]; //что записать
     bool varIsExist = false;
@@ -86,7 +86,7 @@ void queuePop(const request& request){
     fstream file(request.file, ios::in);
     fstream tmpFile("data/tmp.data", ios::out);
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
-    if (request.query.size != 2) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 2) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //имя очереди
     bool varIsExist = false;
     char ch;
@@ -133,7 +133,7 @@ void queuePop(const request& request){
 void queueGet(const request& request){
 //структура команды: get имяОчереди
     fstream file(request.file, ios::in);
-    if (request.query.size != 2) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 2) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //в какой очереди искать
     char ch;
     string varName;

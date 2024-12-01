@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
             callHelp();
             return 1;
         }
-        if (request.query.size == 0){
+        if (request.query.get_size() == 0){
             cout << "An empty query was given: add --help" << endl;
             return 1;
         }
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
 
 void ultimatePrint(const request& request) {
     fstream file(request.file, ios::in | ios::binary); //откуда читаем
-    if (request.query.size == 1){ //вывести все переменные
+    if (request.query.get_size() == 1){ //вывести все переменные
         char ch;
         string varName;
         while (true){
@@ -168,7 +168,7 @@ void ultimatePrint(const request& request) {
             }
         }
     }
-    else if (request.query.size == 2) { //вывести одну переменную
+    else if (request.query.get_size() == 2) { //вывести одну переменную
         string name = request.query[1]; //имя искомой переменной
         char ch;
         string varName;

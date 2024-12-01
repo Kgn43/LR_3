@@ -34,7 +34,7 @@ void stackPush(const request& request){
     fstream file(request.file, ios::in);
     fstream tmpFile("data/tmp.data", ios::out);
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
-    if (request.query.size != 3) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 3) throw runtime_error("Wrong command syntax");
     string name = request.query[1];
     string value = request.query[2]; //что записать
     bool varIsExist = false;
@@ -86,7 +86,7 @@ void stackPop(const request& request){
     fstream file(request.file, ios::in);
     fstream tmpFile("data/tmp.data", ios::out);
     if(!tmpFile.is_open()) throw runtime_error("Tmp file doesn't exist");
-    if (request.query.size != 2) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 2) throw runtime_error("Wrong command syntax");
     string name = request.query[1];
     bool varIsExist = false;
     char ch;
@@ -133,7 +133,7 @@ void stackPop(const request& request){
 void stackGet(const request& request){
 //структура команды: get имяСтека
     fstream file(request.file, ios::in);
-    if (request.query.size != 2) throw runtime_error("Wrong command syntax");
+    if (request.query.get_size() != 2) throw runtime_error("Wrong command syntax");
     string name = request.query[1]; //из какого стека считать
     bool varIsExist = false;
     char ch;
