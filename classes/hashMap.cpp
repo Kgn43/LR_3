@@ -86,3 +86,13 @@ Pair hashMap::Get() const {
     }
     return {};
 }
+
+
+size_t hashMap::get_size() const {
+    return this->pairCount;
+}
+
+size_t hashMap::get_bucketsCount() const {
+    return this->bucketCount;
+}
+

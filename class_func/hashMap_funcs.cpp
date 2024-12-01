@@ -23,9 +23,10 @@ hashMap getHashMap(fstream &stream) {
 }
 
 
-void hashMapToFile(hashMap &hm, fstream &out) {
-    out.write(reinterpret_cast<char*>(&hm.pairCount), sizeof(hm.pairCount)); //write size of hm
-    for (int i = 0; i < hm.bucketCount; ++i) {
+void hashMapToFile(const hashMap &hm, fstream &out) {
+    auto size = hm.get_size();
+    out.write(reinterpret_cast<char*>(&size), sizeof(size)); //write size of hm
+    for (int i = 0; i < hm.get_bucketsCount(); ++i) {
         for (int j = 0; j < hm[i].size; ++j) {
             Pair dat = hm[i][j];
             size_t keySize = dat.key.size();
@@ -114,7 +115,7 @@ void hashSetDel(const request& request){
                 varIsExist = true; //don't update duplicate
                 var.del(key);
             }
-            if (var.pairCount != 0) {
+            if (var.get_size() != 0) {
                 tmpFile.put('#'); //put hm flag
                 nameToFile(varName, tmpFile); //put hm name
                 hashMapToFile(var, tmpFile); //put hm data

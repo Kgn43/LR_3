@@ -76,3 +76,8 @@ int Set::Get() const {
 size_t Set::size() const {
     return this->pairCount;
 }
+
+size_t Set::get_buckets() const {
+    return this->bucketCount;
+}
+

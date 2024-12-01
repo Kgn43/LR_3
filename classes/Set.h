@@ -25,6 +25,7 @@ public:
     bool at(const int& value) const;
     int Get() const;
     size_t size() const;
+    size_t get_buckets() const;
 
     friend ostream& operator<<(ostream& os, const Set& set) {
         os << "{";
