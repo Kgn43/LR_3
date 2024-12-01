@@ -27,7 +27,7 @@ void hashMapToFile(const hashMap &hm, fstream &out) {
     auto size = hm.get_size();
     out.write(reinterpret_cast<char*>(&size), sizeof(size)); //write size of hm
     for (int i = 0; i < hm.get_bucketsCount(); ++i) {
-        for (int j = 0; j < hm[i].size; ++j) {
+        for (int j = 0; j < hm[i].get_size(); ++j) {
             Pair dat = hm[i][j];
             size_t keySize = dat.key.size();
             out.write(reinterpret_cast<char*>(&keySize), sizeof(keySize)); //write one key len

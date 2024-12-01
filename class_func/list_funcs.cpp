@@ -7,9 +7,9 @@ List<string> getList(fstream &stream) {
     if (stream.eof()) throw runtime_error("data is broken");
     List<string> outList(len);
     size_t size;
-    for (int i = 0; i < outList.size; ++i) {
+    for (int i = 0; i < outList.get_size(); ++i) {
         stream.read(reinterpret_cast<char*>(&size), sizeof(size));
-        if (i != outList.size - 1 && stream.eof()) throw runtime_error("data is broken");
+        if (i != outList.get_size() - 1 && stream.eof()) throw runtime_error("data is broken");
         string sDat(size, ' '); //set buffer size
         stream.read(sDat.data(), size);
         outList[i] = sDat;
@@ -18,9 +18,10 @@ List<string> getList(fstream &stream) {
 }
 
 
-void listToFile(List<string> &list, fstream &out) {
-    out.write(reinterpret_cast<char*>(&list.size), sizeof(list.size)); //write size of queue
-    for (int i = 0; i < list.size; ++i) {
+void listToFile(const List<string> &list, fstream &out) {
+    auto size = list.get_size();
+    out.write(reinterpret_cast<char*>(&size), sizeof(size)); //write size of queue
+    for (int i = 0; i < size; ++i) {
         auto dataSize = list[i].size(); //size of on element in queue
         out.write(reinterpret_cast<char*>(&dataSize), sizeof(size_t)); //write this size
         out.write(list[i].c_str(), list[i].size()); //write data
@@ -117,7 +118,7 @@ void listDel(const request& request){
                     var.delByVal(wh);
                 }
             }
-            if (var.size != 0) {
+            if (var.get_size() != 0) {
                 tmpFile.put('/'); //put list flag
                 nameToFile(varName, tmpFile); //put list name
                 listToFile(var, tmpFile); //put list data

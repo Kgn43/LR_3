@@ -120,44 +120,7 @@ List<string> splitToList(const string &input, const char &delimiter){
     return output;
 }
 
-List<Pair> splitToListPair(const string &input, const string& pairDelimiter, const char &keyValueDelimiter){
-    string word;
-    List<Pair> output;
-    Pair currentPair;
-    bool isDelim;
-    int j;
-    for (int i = 0; i < input.size(); ++i){
-        if (input[i] == pairDelimiter[0]){
-            isDelim = true;
-            for (j = 0; j < pairDelimiter.size(); ++j){
-                if (pairDelimiter[j] != input[i + j]) isDelim = false;
-            }
-            if (isDelim){
-                output.backInsert(splitToPair(word, keyValueDelimiter));
-                word = "";
-                i += j - 1;
-            }
-            else {
-                word += input[i];
-            }
-        }
-        else {
-            word += input[i];
-        }
-    }
-    if (word != ""){
-        output.backInsert(splitToPair(word, keyValueDelimiter));
-    }
-    return output;
-
-}
-
-string unSplitList(const List<string>& input, const char &delimiter){
-    ListNode<string>* curr = input.first;
-    string output;
-    while (curr != nullptr){
-        output += curr->value + delimiter;
-        curr = curr->next;
-    }
-    return output;
+template<typename T>
+size_t List<T>::get_size() const {
+    return this->size;
 }

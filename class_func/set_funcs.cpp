@@ -22,7 +22,7 @@ void setToFile(const Set &set, fstream &out) {
     auto size = set.size();
     out.write(reinterpret_cast<char*>(&size), sizeof(size)); //write size of queue
     for (int i = 0; i < set.get_buckets(); ++i) {
-        for (int j = 0; j < set[i].size; ++j) {
+        for (int j = 0; j < set[i].get_size(); ++j) {
             int dat = set[i][j];
             out.write(reinterpret_cast<char*>(&dat), sizeof(int)); //write one num in set
         }

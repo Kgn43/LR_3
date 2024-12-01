@@ -21,11 +21,12 @@ public:
 
 template <typename T>
 class List{
-public:
     ListNode<T>* first;
     ListNode<T>* last;
     size_t size;
-
+public:
+    friend class hashMap;
+    friend class Set;
     List(): first(nullptr), last(nullptr), size(0) {}
 
     List(size_t len) : first(nullptr), last(nullptr), size(0) {
@@ -40,6 +41,7 @@ public:
     void delLast();
     void delByVal(T val);
     bool find(T value);
+    size_t get_size() const;
 
     friend ostream& operator<<(ostream& os, const List<T>& ls) {
         ListNode<T> *curr = ls.first;
@@ -71,10 +73,6 @@ public:
 template struct List<Pair>;
 template struct List<int>;
 template struct List<string>;
-
-List<string> splitToList(const string &input, const char &delimiter = ' ');
-string unSplitList(const List<string>& input, const char &delimiter = ' ');
-List<Pair> splitToListPair(const string &input, const string& pairDelimiter, const char &keyValueDelimiter);
 
 
 #endif // LIST_H
