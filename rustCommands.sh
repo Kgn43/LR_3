@@ -2,4 +2,4 @@
 
 cd rustCoverage/
 
-xdg-open tarpaulin-report.html 
+cargo tarpaulin --out html
