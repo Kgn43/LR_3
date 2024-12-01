@@ -71,3 +71,8 @@ int Set::Get() const {
     //error
     return 0;
 }
+
+
+size_t Set::size() const {
+    return this->pairCount;
+}

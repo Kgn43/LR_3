@@ -7,7 +7,7 @@
 using std::ios, std::ifstream, std::fstream, std::runtime_error;
 
 Set getSet(fstream &stream);
-void setToFile(Set &set, fstream &out);
+void setToFile(const Set &set, fstream &out);
 void setAdd(const request& request);
 void setDel(const request& request);
 void setAt(const request& request);

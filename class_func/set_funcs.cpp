@@ -18,9 +18,10 @@ Set getSet(fstream &stream) {
 }
 
 
-void setToFile(Set &set, fstream &out) {
-    out.write(reinterpret_cast<char*>(&set.pairCount), sizeof(set.pairCount)); //write size of queue
-    for (int i = 0; i < set.bucketCount; ++i) {
+void setToFile(const Set &set, fstream &out) {
+    auto size = set.size();
+    out.write(reinterpret_cast<char*>(&size), sizeof(size)); //write size of queue
+    for (int i = 0; i < set.size(); ++i) {
         for (int j = 0; j < set[i].size; ++j) {
             int dat = set[i][j];
             out.write(reinterpret_cast<char*>(&dat), sizeof(int)); //write one num in set
@@ -108,7 +109,7 @@ void setDel(const request& request) {
                 varIsExist = true; //don't update duplicate
                 var.del(value);
             }
-            if (var.pairCount != 0) {
+            if (var.size() != 0) {
                 tmpFile.put('|'); //put set flag
                 nameToFile(varName, tmpFile); //put set name
                 setToFile(var, tmpFile); //put set data
